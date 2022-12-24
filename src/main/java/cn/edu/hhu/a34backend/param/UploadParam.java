@@ -7,7 +7,5 @@ public class UploadParam {
 
     String title;
 
-    String type;
-
     String data;
 }
