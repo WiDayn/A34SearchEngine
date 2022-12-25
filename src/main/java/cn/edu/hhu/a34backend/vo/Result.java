@@ -26,4 +26,9 @@ public class Result implements Serializable {
     public static Result fail(int code,String msg,Object data){
         return new Result(false,code,data,msg);
     }
+
+    public static Result fail(ErrorCode errorCode){
+        return new Result(false,errorCode.getCode(),null,errorCode.getMsg());
+    }
+
 }

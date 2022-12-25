@@ -21,4 +21,9 @@ public class UploadController {
     public Result PDF(@RequestBody UploadParam uploadParam){
         return uploadService.uploadPDF(uploadParam);
     }
+
+
+
+
+
 }
