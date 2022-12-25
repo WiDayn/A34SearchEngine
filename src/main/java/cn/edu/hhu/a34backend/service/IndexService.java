@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IndexService
 {
-    void indexSinglePdfPage(long parentPdfUuid,int pageNumber,String singlePageBase64Str);
-
+    void indexSinglePdfPage(long parentPdfUuid,int pageNumber,String singlePageText);
 
 }

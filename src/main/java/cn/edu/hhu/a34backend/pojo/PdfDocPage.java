@@ -1,19 +1,23 @@
 package cn.edu.hhu.a34backend.pojo;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 
 @Data
 @Document(indexName = "pdfdoc")
 public class PdfDocPage
 {
-    @Field(type=FieldType.Long,index=false)
+    @Id
+    @Field(type=FieldType.Long,index=false,store = true)
+    private long id;
+    @Field(type=FieldType.Long,index=false,store = true)
     private long parentPdfUuid;
 
-    @Field(type=FieldType.Long,index=false)
+    @Field(type=FieldType.Long,index=false,store = true)
     private int pageNumber;
 
-    @Field(type=FieldType.Text,index=true,analyzer = "ik_smart")
+    @Field(type=FieldType.Text,index=true,store = true,analyzer = "ik_smart")
     private String content;
 
     public PdfDocPage(){}

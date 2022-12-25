@@ -1,7 +1,9 @@
 package cn.edu.hhu.a34backend.service.impl;
 
 import Decoder.BASE64Decoder;
+import Decoder.BASE64Encoder;
 import cn.edu.hhu.a34backend.param.UploadParam;
+import cn.edu.hhu.a34backend.service.IndexService;
 import cn.edu.hhu.a34backend.service.UploadService;
 import cn.edu.hhu.a34backend.utils.PDFUtils;
 import cn.edu.hhu.a34backend.utils.SnowFlake;
@@ -9,6 +11,8 @@ import cn.edu.hhu.a34backend.vo.ErrorCode;
 import cn.edu.hhu.a34backend.vo.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -34,6 +38,9 @@ public class UploadServiceImpl implements UploadService {
 
     @Value("${setting.datacenter-id}")
     private int datacenterId;
+
+    @Autowired
+    IndexService indexService;
 
 
     @Override
@@ -71,17 +78,18 @@ public class UploadServiceImpl implements UploadService {
     }
 
     //测试用
+    //分割pdf并逐页添加至es的index
     @Override
     public Result uploadPDF2(UploadParam uploadParam) throws IOException
     {
         SnowFlake snowFlake = new SnowFlake(workerId, datacenterId, 1);
 
-        String saveName = String.valueOf(snowFlake.nextId());
+        long uuid=snowFlake.nextId();
+        String saveName = String.valueOf(uuid);
 
         String saveFilePath = uploadPath + "/" + saveName + ".pdf";
 
         BASE64Decoder base64Decoder = new BASE64Decoder();
-
         byte[] decodedBytes = base64Decoder.decodeBuffer(uploadParam.getData());
 
         File file = new File(saveFilePath);
@@ -94,8 +102,18 @@ public class UploadServiceImpl implements UploadService {
 
         fop.close();
 
-        PDFUtils.divide(saveFilePath, saveName, tempPath);
+        String[] pdfPagesText=PDFUtils.split(saveFilePath, saveName, tempPath);
 
+        int pageCnt=0;
+
+        BASE64Encoder base64Encoder=new BASE64Encoder();
+        System.out.println("ok");
+        for(String pdfSinglePageText: pdfPagesText)
+        {
+            System.out.println("=======Page"+ ++pageCnt+"========");
+            System.out.println(pdfSinglePageText);
+            indexService.indexSinglePdfPage(uuid, pageCnt, pdfSinglePageText);
+        }
 
         return Result.success(null, "Success");
     }

@@ -2,6 +2,7 @@ package cn.edu.hhu.a34backend.utils;
 
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 import java.io.*;
 import java.util.Iterator;
@@ -36,7 +37,7 @@ public class PDFUtils
         return pagesCount;
     }
 
-    //输出分割的pdf到String数组
+    //输出分割的pdf到String[]数组
     public static String[] split(String originFile, String outputPrefix, String outputPath) throws IOException {
         PDDocument pdDocument = PDDocument.load(new File(originFile));
         Splitter splitter = new Splitter();
@@ -44,14 +45,18 @@ public class PDFUtils
         Iterator<PDDocument> iterator = pages.listIterator();
         int pagesCount = 0;
 
-        ByteArrayOutputStream op=new ByteArrayOutputStream();
-        String[] pdfPageStrings=new String[pages.size()];
-        while(iterator.hasNext()) {
+        String[] pdfPagesText=new String[pages.size()];
+
+        PDFTextStripper pdfStripper=new PDFTextStripper();
+        System.out.println("ok2");
+        while(iterator.hasNext())
+        {
             PDDocument pd = iterator.next();
-            pd.save(op);
-            pdfPageStrings[pagesCount++]=op.toString();
+            pdfPagesText[pagesCount++]=pdfStripper.getText(pd);
+            System.out.println("ok"+pagesCount);
+            pd.close();
         }
         pdDocument.close();
-        return pdfPageStrings;
+        return pdfPagesText;
     }
 }

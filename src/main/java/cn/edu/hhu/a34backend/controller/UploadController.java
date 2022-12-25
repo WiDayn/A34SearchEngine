@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("upload")
 @RequiredArgsConstructor
@@ -22,6 +24,13 @@ public class UploadController {
         return uploadService.uploadPDF(uploadParam);
     }
 
+
+    //测试用,测试上传&添加到index功能
+    @PostMapping("pdf2")
+    public Result PDF2(@RequestBody UploadParam uploadParam) throws IOException
+    {
+        return uploadService.uploadPDF2(uploadParam);
+    }
 
 
 

@@ -20,4 +20,6 @@ public class GlobalConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .maxAge(1800);
     }
+
+
 }
