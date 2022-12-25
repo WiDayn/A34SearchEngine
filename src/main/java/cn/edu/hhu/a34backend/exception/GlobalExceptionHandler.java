@@ -18,7 +18,6 @@ public class GlobalExceptionHandler
     @ExceptionHandler(value = CustomException.class)
     public Result customExceptionHandler(CustomException e)
     {
-
         log.error("发生自定义异常:" + e.errorCode.getMsg() + "(" + e.errorCode.getCode() + ")");
         return Result.fail(e.errorCode);
     }
