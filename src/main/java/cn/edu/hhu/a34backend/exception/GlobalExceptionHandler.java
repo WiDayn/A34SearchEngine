@@ -2,6 +2,7 @@ package cn.edu.hhu.a34backend.exception;
 
 import cn.edu.hhu.a34backend.vo.ErrorCode;
 import cn.edu.hhu.a34backend.vo.Result;
+import com.alibaba.fastjson.JSONObject;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
 import lombok.extern.slf4j.Slf4j;

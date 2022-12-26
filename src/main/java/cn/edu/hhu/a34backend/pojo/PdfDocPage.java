@@ -9,8 +9,8 @@ import org.springframework.data.elasticsearch.annotations.*;
 public class PdfDocPage
 {
     @Id
-    @Field(type=FieldType.Long,index=false,store = true)
-    private long id;
+    @Field(type=FieldType.Keyword,index=false,store = true)
+    private String id;
     @Field(type=FieldType.Long,index=false,store = true)
     private long parentPdfUuid;
 

@@ -3,7 +3,7 @@ package cn.edu.hhu.a34backend.service.impl;
 import Decoder.BASE64Decoder;
 import Decoder.BASE64Encoder;
 import cn.edu.hhu.a34backend.param.UploadParam;
-import cn.edu.hhu.a34backend.service.IndexService;
+import cn.edu.hhu.a34backend.service.ESService;
 import cn.edu.hhu.a34backend.service.UploadService;
 import cn.edu.hhu.a34backend.utils.PDFUtils;
 import cn.edu.hhu.a34backend.utils.SnowFlake;
@@ -11,9 +11,9 @@ import cn.edu.hhu.a34backend.vo.ErrorCode;
 import cn.edu.hhu.a34backend.vo.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +40,7 @@ public class UploadServiceImpl implements UploadService {
     private int datacenterId;
 
     @Autowired
-    IndexService indexService;
+    ESService indexService;
 
 
     @Override
@@ -90,6 +90,7 @@ public class UploadServiceImpl implements UploadService {
         String saveFilePath = uploadPath + "/" + saveName + ".pdf";
 
         BASE64Decoder base64Decoder = new BASE64Decoder();
+
         byte[] decodedBytes = base64Decoder.decodeBuffer(uploadParam.getData());
 
         File file = new File(saveFilePath);

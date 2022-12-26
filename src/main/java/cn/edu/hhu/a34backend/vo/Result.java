@@ -2,10 +2,12 @@ package cn.edu.hhu.a34backend.vo;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.io.Serializable;
 
 @AllArgsConstructor
+@Data
 public class Result implements Serializable {
     private boolean success;
 
@@ -30,5 +32,6 @@ public class Result implements Serializable {
     public static Result fail(ErrorCode errorCode){
         return new Result(false,errorCode.getCode(),null,errorCode.getMsg());
     }
+
 
 }
