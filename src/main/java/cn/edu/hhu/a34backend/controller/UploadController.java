@@ -28,7 +28,10 @@ public class UploadController {
     @PostMapping("pdf2")
     public Result PDF2(@RequestBody UploadParam uploadParam) throws IOException
     {
-        return uploadService.uploadPDF2(uploadParam);
+        long start=System.currentTimeMillis();
+        Result result=uploadService.uploadPDF2(uploadParam);
+        System.out.println("===用时==="+(System.currentTimeMillis()-start));
+        return result;
     }
 
 

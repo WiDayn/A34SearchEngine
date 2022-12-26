@@ -1,6 +1,5 @@
 package cn.edu.hhu.a34backend.vo;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

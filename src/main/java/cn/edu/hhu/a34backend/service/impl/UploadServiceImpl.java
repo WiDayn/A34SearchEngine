@@ -1,7 +1,6 @@
 package cn.edu.hhu.a34backend.service.impl;
 
-import Decoder.BASE64Decoder;
-import Decoder.BASE64Encoder;
+import org.apache.commons.codec.binary.Base64;
 import cn.edu.hhu.a34backend.param.UploadParam;
 import cn.edu.hhu.a34backend.service.ESService;
 import cn.edu.hhu.a34backend.service.UploadService;
@@ -51,10 +50,8 @@ public class UploadServiceImpl implements UploadService {
 
         String saveFilePath = uploadPath + "/" + saveName + ".pdf";
 
-        BASE64Decoder base64Decoder = new BASE64Decoder();
-
         try {
-            byte[] decodedBytes = base64Decoder.decodeBuffer(uploadParam.getData());
+            byte[] decodedBytes = Base64.decodeBase64(uploadParam.getData());
 
             File file = new File(saveFilePath);
 
@@ -89,9 +86,7 @@ public class UploadServiceImpl implements UploadService {
 
         String saveFilePath = uploadPath + "/" + saveName + ".pdf";
 
-        BASE64Decoder base64Decoder = new BASE64Decoder();
-
-        byte[] decodedBytes = base64Decoder.decodeBuffer(uploadParam.getData());
+        byte[] decodedBytes = Base64.decodeBase64(uploadParam.getData());
 
         File file = new File(saveFilePath);
 
@@ -107,8 +102,6 @@ public class UploadServiceImpl implements UploadService {
 
         int pageCnt=0;
 
-        BASE64Encoder base64Encoder=new BASE64Encoder();
-        System.out.println("ok");
         for(String pdfSinglePageText: pdfPagesText)
         {
             System.out.println("=======Page"+ ++pageCnt+"========");
