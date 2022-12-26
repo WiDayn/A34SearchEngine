@@ -13,6 +13,6 @@ public class SearchResult
 
     int pageNumber;
 
-    long parentPdfUuid;
+    long parentPdfUUID;
 
 }

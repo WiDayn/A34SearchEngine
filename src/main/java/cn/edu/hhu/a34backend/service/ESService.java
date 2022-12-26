@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public interface ESService
 {
     @Async
-    void indexSinglePdfPage(long parentPdfUuid,int pageNumber,String singlePageText);
+    void indexSinglePdfPage(long parentPdfUUID,int pageNumber,String singlePageText);
 
     SearchHits<PdfDocPage> queryKeywords(String keywords);
 }

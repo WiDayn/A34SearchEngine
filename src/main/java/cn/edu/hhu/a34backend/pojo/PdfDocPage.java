@@ -12,7 +12,7 @@ public class PdfDocPage
     @Field(type=FieldType.Keyword,index=false,store = true)
     private String id;
     @Field(type=FieldType.Long,index=false,store = true)
-    private long parentPdfUuid;
+    private long parentPdfUUID;
 
     @Field(type=FieldType.Long,index=false,store = true)
     private int pageNumber;
@@ -22,9 +22,9 @@ public class PdfDocPage
 
     public PdfDocPage(){}
 
-    public PdfDocPage(long parentPdfUuid,int pageNumber,String content)
+    public PdfDocPage(long parentPdfUUID,int pageNumber,String content)
     {
-        this.parentPdfUuid=parentPdfUuid;
+        this.parentPdfUUID=parentPdfUUID;
         this.pageNumber=pageNumber;
         this.content=content;
     }

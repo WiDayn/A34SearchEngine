@@ -19,9 +19,9 @@ public interface PdfDocRepository extends ElasticsearchRepository<PdfDocPage,Str
                 "}"+
             "}}";
     @Query(value = findByContentQStr )
-   @Highlight(
+    @Highlight(
            fields = @HighlightField(name="content"),
            parameters = @HighlightParameters(preTags="<em>",postTags = "</em>",fragmentSize = 100)
-   )
+    )
     SearchHits<PdfDocPage> findByContent(String content);
 }

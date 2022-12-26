@@ -30,10 +30,10 @@ public class ESServiceImpl implements ESService
 
     @Override
     @Async
-    public void indexSinglePdfPage(long parentPdfUuid,int pageNumber,String singlePageText)
+    public void indexSinglePdfPage(long parentPdfUUID,int pageNumber,String singlePageText)
     {
-        PdfDocPage pdfDocPage=new PdfDocPage(parentPdfUuid,pageNumber,singlePageText);
-        pdfDocPage.setId(parentPdfUuid+"-"+pageNumber);
+        PdfDocPage pdfDocPage=new PdfDocPage(parentPdfUUID,pageNumber,singlePageText);
+        pdfDocPage.setId(parentPdfUUID+"-"+pageNumber);
         pdfDocRepository.save(pdfDocPage);
     }
 
