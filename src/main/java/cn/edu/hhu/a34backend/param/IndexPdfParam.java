@@ -7,5 +7,5 @@ public class IndexPdfParam
 {
     String filepath;
 
-    long pdfUuid;
+    long pdfUUID;
 }

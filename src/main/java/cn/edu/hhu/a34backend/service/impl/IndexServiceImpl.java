@@ -23,9 +23,9 @@ public class IndexServiceImpl implements IndexService
     public PdfDocRepository pdfDocRepository;
 
     @Override
-    public void indexSinglePdfPage(long parentPdfUuid,int pageNumber,String singlePageText)
+    public void indexSinglePdfPage(long parentPdfUUID,int pageNumber,String singlePageText)
     {
-        PdfDocPage pdfDocPage=new PdfDocPage(parentPdfUuid,pageNumber,singlePageText);
+        PdfDocPage pdfDocPage=new PdfDocPage(parentPdfUUID,pageNumber,singlePageText);
         SnowFlake flake=new SnowFlake(workerId, datacenterId, 1);
         pdfDocPage.setId(flake.nextId());
         pdfDocRepository.save(pdfDocPage);

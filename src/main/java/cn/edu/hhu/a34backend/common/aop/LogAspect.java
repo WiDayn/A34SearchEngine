@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -70,7 +71,7 @@ public class LogAspect {
         }
 
         //获取request 设置IP地址
-        HttpServletRequest request = HttpContextUtils.getHttpServletRequest();
+        HttpServletRequest request = (HttpServletRequest) HttpContextUtils.getHttpServletRequest();
         log.info("ip:{}", IpUtils.getIpAddr(request));
 
         log.info("excute time : {} ms",time);

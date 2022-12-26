@@ -3,6 +3,7 @@ server:
 spring:
   application:
     name: A34BackEnd
+
   datasource:
     url: jdbc:mysql://1.15.242.140/:3306/rfid?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: a34_test
@@ -24,13 +25,6 @@ spring:
     # 连接超时时间。默认值为30s
     connection-timeout: 30000
 
-  elasticsearch:
-    uris: http://127.0.0.1:9200
-    username: elastic
-    password: kiminouso030221
-
-
-
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -45,5 +39,3 @@ setting:
   datacenter-id: 1
   pdf-file-path: 'F:/static/pdf'
   pdf-temp-path: 'F:/static/temp'
-
-
