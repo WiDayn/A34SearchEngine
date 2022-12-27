@@ -27,7 +27,7 @@ spring:
   elasticsearch:
     uris: http://127.0.0.1:9200
     username: elastic
-    password: kiminouso030221
+    password: Ce7IMwcJMlX37GbI1hz*
   data:
     redis:
       host: 127.0.0.1

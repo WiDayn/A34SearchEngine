@@ -49,7 +49,7 @@ public class PDFUtils
         while (iterator.hasNext())
         {
             PDDocument pd = iterator.next();
-            pd.save(outputPath + outputPrefix + "-out-" + ++pagesCount + ".pdf");
+            pd.save(outputPath+ "/" + outputPrefix + "-out-" + ++pagesCount +".pdf");
         }
         pdDocument.close();
 

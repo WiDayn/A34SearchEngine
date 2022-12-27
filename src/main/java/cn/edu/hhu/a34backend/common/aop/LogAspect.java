@@ -12,7 +12,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
 /**
@@ -77,4 +77,3 @@ public class LogAspect {
         log.info("=====================log end================================");
     }
 }
-
