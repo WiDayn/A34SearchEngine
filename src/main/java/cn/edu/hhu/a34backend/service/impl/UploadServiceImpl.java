@@ -1,5 +1,7 @@
 package cn.edu.hhu.a34backend.service.impl;
 
+import cn.edu.hhu.a34backend.pojo.PdfContent;
+import cn.edu.hhu.a34backend.pojo.PdfImage;
 import org.apache.commons.codec.binary.Base64;
 import cn.edu.hhu.a34backend.param.UploadParam;
 import cn.edu.hhu.a34backend.service.ESService;
@@ -12,10 +14,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,7 +42,7 @@ public class UploadServiceImpl implements UploadService {
     private int datacenterId;
 
     @Autowired
-    ESService indexService;
+    ESService esService;
 
 
     @Override
@@ -80,7 +83,7 @@ public class UploadServiceImpl implements UploadService {
     public Result uploadPDF2(UploadParam uploadParam) throws IOException
     {
         SnowFlake snowFlake = new SnowFlake(workerId, datacenterId, 1);
-        long uuid=snowFlake.nextId();
+        long uuid = snowFlake.nextId();
         String saveName = String.valueOf(uuid);
         String saveFilePath = uploadPath + "/" + saveName + ".pdf";
         byte[] decodedBytes = Base64.decodeBase64(uploadParam.getData());
@@ -89,14 +92,18 @@ public class UploadServiceImpl implements UploadService {
         fop.write(decodedBytes);
         fop.flush();
         fop.close();
-
-        String[] pdfPagesText=PDFUtils.split(decodedBytes);
-        int pageCnt=0;
-        for(String pdfSinglePageText: pdfPagesText)
+        PdfContent[] pdfPages = PDFUtils.split(decodedBytes);
+        int pageCnt = 1;
+        for (PdfContent pdfSinglePage : pdfPages)
         {
-            System.out.println("=======Page"+ ++pageCnt+"========");
-            System.out.println(pdfSinglePageText);
-            indexService.indexSinglePdfPage(uuid, pageCnt, pdfSinglePageText);
+            esService.indexSinglePdfPage(uuid, pageCnt, pdfSinglePage.getText());
+            int imgCnt = 1;
+            for (PdfImage bImg : pdfSinglePage.getImages())
+            {
+                ImageIO.write(bImg.getImageBuffer(), "PNG", new File("F:/static/img/" + uuid + "-" + pageCnt + "-" + imgCnt + ".png"));
+                imgCnt++;
+            }
+            pageCnt++;
         }
 
         return Result.success(null, "Success");

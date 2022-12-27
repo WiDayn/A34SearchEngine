@@ -32,8 +32,8 @@ public class ESServiceImpl implements ESService
     @Async
     public void indexSinglePdfPage(long parentPdfUUID,int pageNumber,String singlePageText)
     {
-        PdfDocPage pdfDocPage=new PdfDocPage(parentPdfUUID,pageNumber,singlePageText);
-        pdfDocPage.setId(parentPdfUUID+"-"+pageNumber);
+        PdfDocPage pdfDocPage=new PdfDocPage(parentPdfUUID,pageNumber,singlePageText,null);
+
         pdfDocRepository.save(pdfDocPage);
     }
 

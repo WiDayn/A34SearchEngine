@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 
+import java.util.Vector;
+
 @Data
 @Document(indexName = "pdfdoc")
 public class PdfDocPage
@@ -25,10 +27,14 @@ public class PdfDocPage
 
     public PdfDocPage() {}
 
-    public PdfDocPage(long parentPdfUUID, int pageNumber, String content)
+    public PdfDocPage(long parentPdfUUID, int pageNumber, String content,String textFromImages)
     {
+
         this.parentPdfUUID = parentPdfUUID;
         this.pageNumber = pageNumber;
         this.content = content;
+        this.textFromImages=textFromImages;
+        this.id=parentPdfUUID+"-"+pageNumber;
+
     }
 }
