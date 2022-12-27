@@ -75,33 +75,23 @@ public class UploadServiceImpl implements UploadService {
     }
 
     //测试用
-    //分割pdf并逐页添加至es的index
+    //pdf保存至文件,分割pdf并逐页添加至es的index
     @Override
     public Result uploadPDF2(UploadParam uploadParam) throws IOException
     {
         SnowFlake snowFlake = new SnowFlake(workerId, datacenterId, 1);
-
         long uuid=snowFlake.nextId();
         String saveName = String.valueOf(uuid);
-
         String saveFilePath = uploadPath + "/" + saveName + ".pdf";
-
         byte[] decodedBytes = Base64.decodeBase64(uploadParam.getData());
-
         File file = new File(saveFilePath);
-
         FileOutputStream fop = new FileOutputStream(file);
-
         fop.write(decodedBytes);
-
         fop.flush();
-
         fop.close();
 
-        String[] pdfPagesText=PDFUtils.split(saveFilePath, saveName, tempPath);
-
+        String[] pdfPagesText=PDFUtils.split(decodedBytes);
         int pageCnt=0;
-
         for(String pdfSinglePageText: pdfPagesText)
         {
             System.out.println("=======Page"+ ++pageCnt+"========");

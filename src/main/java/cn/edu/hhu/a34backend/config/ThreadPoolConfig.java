@@ -18,7 +18,7 @@ public class ThreadPoolConfig {
         // 设置核心线程数
         threadPoolTaskExecutor.setCorePoolSize(5);
         // 设置最大线程数
-        threadPoolTaskExecutor.setMaxPoolSize(5);
+        threadPoolTaskExecutor.setMaxPoolSize(10);
         // 设置工作队列大小
         threadPoolTaskExecutor.setQueueCapacity(2000);
         // 设置线程名称前缀

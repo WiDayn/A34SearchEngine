@@ -40,8 +40,7 @@ public class ESServiceImpl implements ESService
     @Override
     public SearchHits<PdfDocPage> queryKeywords(String keywords)
     {
-        SearchHits<PdfDocPage> hitPages= pdfDocRepository.findByContent(keywords);
-        return hitPages;
+        return pdfDocRepository.findByContent(keywords);
     }
 
 

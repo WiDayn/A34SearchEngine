@@ -37,24 +37,20 @@ public class PDFUtils
         return pagesCount;
     }
 
-    //输出分割的pdf到String[]数组
-    public static String[] split(String originFile, String outputPrefix, String outputPath) throws IOException {
-        PDDocument pdDocument = PDDocument.load(new File(originFile));
+    //以页为单位分割,输出分割的pdf文字到String[]数组
+    public static String[] split(byte[] pdfBinData) throws IOException
+    {
+        PDDocument pdDocument = PDDocument.load(pdfBinData);
         Splitter splitter = new Splitter();
         List<PDDocument> pages = splitter.split(pdDocument);
-        Iterator<PDDocument> iterator = pages.listIterator();
+        String[] pdfPagesText = new String[pages.size()];
+        PDFTextStripper pdfStripper = new PDFTextStripper();
         int pagesCount = 0;
-
-        String[] pdfPagesText=new String[pages.size()];
-
-        PDFTextStripper pdfStripper=new PDFTextStripper();
-        System.out.println("ok2");
-        while(iterator.hasNext())
+        for (PDDocument page : pages)
         {
-            PDDocument pd = iterator.next();
-            pdfPagesText[pagesCount++]=pdfStripper.getText(pd);
-            System.out.println("ok"+pagesCount);
-            pd.close();
+            pdfPagesText[pagesCount++] = pdfStripper.getText(page);
+            System.out.println("ok" + pagesCount);
+            page.close();
         }
         pdDocument.close();
         return pdfPagesText;

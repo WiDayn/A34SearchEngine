@@ -9,26 +9,26 @@ import org.springframework.data.elasticsearch.annotations.*;
 public class PdfDocPage
 {
     @Id
-    @Field(type=FieldType.Keyword,index=false,store = true)
+    @Field(type = FieldType.Keyword, index = false, store = true)
     private String id;
-    @Field(type=FieldType.Long,index=false,store = true)
+    @Field(type = FieldType.Long, index = false, store = true)
     private long parentPdfUUID;
 
-    @Field(type=FieldType.Long,index=false,store = true)
+    @Field(type = FieldType.Long, index = false, store = true)
     private int pageNumber;
 
-    @Field(type=FieldType.Text,index=true,store = true,analyzer = "ik_smart")
+    @Field(type = FieldType.Text, index = true, store = true, analyzer = "ik_smart")
     private String content;
 
-    public PdfDocPage(){}
+    @Field(type = FieldType.Text, index = true, store = true, analyzer = "ik_smart")
+    private String textFromImages;
 
-    public PdfDocPage(long parentPdfUUID,int pageNumber,String content)
+    public PdfDocPage() {}
+
+    public PdfDocPage(long parentPdfUUID, int pageNumber, String content)
     {
-        this.parentPdfUUID=parentPdfUUID;
-        this.pageNumber=pageNumber;
-        this.content=content;
+        this.parentPdfUUID = parentPdfUUID;
+        this.pageNumber = pageNumber;
+        this.content = content;
     }
-
-
-
 }

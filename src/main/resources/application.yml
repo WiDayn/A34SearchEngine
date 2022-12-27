@@ -28,7 +28,10 @@ spring:
     uris: http://127.0.0.1:9200
     username: elastic
     password: kiminouso030221
-
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
 
 
 mybatis-plus:
