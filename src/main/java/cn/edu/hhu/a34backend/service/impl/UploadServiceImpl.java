@@ -8,7 +8,7 @@ import cn.edu.hhu.a34backend.service.ESService;
 import cn.edu.hhu.a34backend.service.UploadService;
 import cn.edu.hhu.a34backend.utils.PDFUtils;
 import cn.edu.hhu.a34backend.utils.SnowFlake;
-import cn.edu.hhu.a34backend.vo.ErrorCode;
+import cn.edu.hhu.a34backend.vo.StatusEnum;
 import cn.edu.hhu.a34backend.vo.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,7 +68,7 @@ public class UploadServiceImpl implements UploadService {
             PDFUtils.divide(saveFilePath, saveName, tempPath);
 
         } catch (Exception e) {
-            Result.fail(ErrorCode.SYSTEM_EXCEPTION.getCode(), ErrorCode.SYSTEM_EXCEPTION.getMsg());
+            Result.fail(StatusEnum.SYSTEM_EXCEPTION.getCode(), StatusEnum.SYSTEM_EXCEPTION.getMsg());
 
             e.printStackTrace();
         }

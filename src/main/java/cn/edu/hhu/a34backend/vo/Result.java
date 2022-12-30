@@ -28,8 +28,8 @@ public class Result implements Serializable {
         return new Result(false,code,data,msg);
     }
 
-    public static Result fail(ErrorCode errorCode){
-        return new Result(false,errorCode.getCode(),null,errorCode.getMsg());
+    public static Result fail(StatusEnum statusEnum){
+        return new Result(false, statusEnum.getCode(),null, statusEnum.getMsg());
     }
 
 

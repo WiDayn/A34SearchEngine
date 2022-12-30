@@ -1,12 +1,15 @@
 package cn.edu.hhu.a34backend.vo;
 
-public enum ErrorCode {
-    PARAMS_ERROR(10001,"参数有误"),
-    PARAMS_EMPTY(10000,"参数为空"),
-    ACCOUNT_PWD_NOT_EXIST(10002,"用户名或密码不存在"),
+public enum StatusEnum
+{
+    OPERATION_OK(0,"操作成功"),
+    INVALID_ARGUMENT(1,"参数有误或无效"),
+    SYSTEM_EXCEPTION(2,"系统异常"),
+    ACCOUNT_NOT_EXIST(10001,"用户名不存在"),
+    WRONG_PASSWORD(10002,"密码错误"),
     TOKEN_ERROR(10003,"token不合法"),
     TOKEN_EXPIRED(10004,"token已失效"),
-    SYSTEM_EXCEPTION(10004,"系统异常"),
+
     NO_PERMISSION(70001,"无访问权限"),
     SESSION_TIME_OUT(90001,"会话超时"),
     ACCOUNT_EXIST(90002,"账号已经存在"),
@@ -18,7 +21,7 @@ public enum ErrorCode {
     private int code;
     private String msg;
 
-    ErrorCode(int code, String msg){
+    StatusEnum(int code, String msg){
         this.code = code;
         this.msg = msg;
     }

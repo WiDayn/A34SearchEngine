@@ -1,8 +1,7 @@
 package cn.edu.hhu.a34backend.exception;
 
-import cn.edu.hhu.a34backend.vo.ErrorCode;
+import cn.edu.hhu.a34backend.vo.StatusEnum;
 import cn.edu.hhu.a34backend.vo.Result;
-import com.alibaba.fastjson.JSONObject;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +18,8 @@ public class GlobalExceptionHandler
     @ExceptionHandler(value = CustomException.class)
     public Result customExceptionHandler(CustomException e)
     {
-        log.error("发生自定义异常:" + e.errorCode.getMsg() + "(" + e.errorCode.getCode() + ")");
-        return Result.fail(e.errorCode);
+        log.error("发生自定义异常:" + e.statusEnum.getMsg() + "(" + e.statusEnum.getCode() + ")");
+        return Result.fail(e.statusEnum);
     }
 
     @ExceptionHandler(value = NullPointerException.class)
@@ -28,7 +27,7 @@ public class GlobalExceptionHandler
     {
         log.error("发生空指针异常:" + e.getMessage());
         e.printStackTrace();
-        return Result.fail(ErrorCode.SYSTEM_EXCEPTION);
+        return Result.fail(StatusEnum.SYSTEM_EXCEPTION);
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -36,7 +35,7 @@ public class GlobalExceptionHandler
     {
         log.error("发生接口参数异常:"+e.getMessage());
         e.printStackTrace();
-        return Result.fail(ErrorCode.PARAMS_ERROR);
+        return Result.fail(StatusEnum.INVALID_ARGUMENT);
     }
 
     @ExceptionHandler(value= SignatureException.class)
@@ -44,7 +43,7 @@ public class GlobalExceptionHandler
     {
         log.warn("发生令牌异常:"+e.getMessage());
         e.printStackTrace();
-        return Result.fail(ErrorCode.TOKEN_ERROR);
+        return Result.fail(StatusEnum.TOKEN_ERROR);
     }
 
     @ExceptionHandler(value= ExpiredJwtException.class)
@@ -52,7 +51,7 @@ public class GlobalExceptionHandler
     {
         log.warn("发生令牌异常:"+e.getMessage());
         e.printStackTrace();
-        return Result.fail(ErrorCode.TOKEN_EXPIRED);
+        return Result.fail(StatusEnum.TOKEN_EXPIRED);
     }
 
     @ExceptionHandler(value = Exception.class)
@@ -60,6 +59,6 @@ public class GlobalExceptionHandler
     {
         log.warn("发生其他异常:"+e.getMessage());
         e.printStackTrace();
-        return Result.fail(ErrorCode.SYSTEM_EXCEPTION);
+        return Result.fail(StatusEnum.SYSTEM_EXCEPTION);
     }
 }

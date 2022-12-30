@@ -1,18 +1,18 @@
 package cn.edu.hhu.a34backend.exception;
 
-import cn.edu.hhu.a34backend.vo.ErrorCode;
+import cn.edu.hhu.a34backend.vo.StatusEnum;
 
 public class CustomException extends RuntimeException
 {
-    protected ErrorCode errorCode;
+    protected StatusEnum statusEnum;
 
-    public CustomException(ErrorCode errorCode)
+    public CustomException(StatusEnum statusEnum)
     {
-        this.errorCode=errorCode;
+        this.statusEnum = statusEnum;
     }
 
-    public ErrorCode getErrorCode()
+    public StatusEnum getErrorCode()
     {
-        return errorCode;
+        return statusEnum;
     }
 }

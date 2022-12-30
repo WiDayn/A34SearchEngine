@@ -111,7 +111,6 @@ public class PDFUtils
                         Matrix imgMatrix = getGraphicsState().getCurrentTransformationMatrix();
                         float imgXScale = imgMatrix.getScalingFactorX();
                         float imgYScale = imgMatrix.getScalingFactorY();
-
                         float imgPosX = imgMatrix.getTranslateX();
                         float imgPosY = imgMatrix.getTranslateY();
                         images.add(new PdfImage(bImage, new Rectangle(imgPosX, imgPosY, imgXScale, imgYScale)));
