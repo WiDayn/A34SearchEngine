@@ -1,28 +1,13 @@
 server:
-  port: 8857
+  port: 8887
 spring:
   application:
     name: A34BackEnd
   datasource:
-    url: jdbc:mysql://1.15.242.140/:3306/rfid?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://1.15.242.140:3306/a34_test?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: a34_test
     password: 5deT4zT5hKpfFYhj
     driver-class-name: com.mysql.cj.jdbc.Driver
-  hikari:
-    # 池中最小空闲连接数量，默认值10
-    minimum-idle: 5
-    # 空闲时间
-    idle-timeout: 600000
-    # 池中最大连接数（包括空闲和正在使用的连接）
-    maximum-pool-size: 10
-    # 是否自动提交池中返回的连接
-    auto-commit: true
-    # 连接池的名字
-    pool-name: MyHikariCP
-    # 连接池中连接的最大生命周期
-    max-lifetime: 1800000
-    # 连接超时时间。默认值为30s
-    connection-timeout: 30000
 
   elasticsearch:
     uris: http://127.0.0.1:9200
@@ -48,5 +33,9 @@ setting:
   datacenter-id: 1
   pdf-file-path: 'F:/static/pdf'
   pdf-temp-path: 'F:/static/temp'
+  auth-server:
+    address: "http://127.0.0.1:8857"
+    auth-key: "AGLQwrl9gzazdAgv"
 
-
+test:
+  test-pdf: "/root/a34/pdf/test.pdf"

@@ -7,6 +7,7 @@ import cn.edu.hhu.a34backend.vo.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,9 @@ public class QueryController
 {
 
     private ESService esService;
+
+    @Value("${test.test-pdf}")
+    private String testPDF;
 
     @GetMapping("keywords")
     public Result queryKeywords(String queryString)
