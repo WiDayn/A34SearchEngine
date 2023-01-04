@@ -17,8 +17,6 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.util.Matrix;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Iterator;
@@ -104,9 +102,8 @@ public class PDFUtils
                 {
                     COSName objectName = (COSName) operands.get(0);
                     PDXObject xobject = getResources().getXObject(objectName);
-                    if (xobject instanceof PDImageXObject)
+                    if (xobject instanceof PDImageXObject imageObj)
                     {
-                        PDImageXObject imageObj = (PDImageXObject) xobject;
                         BufferedImage bImage = imageObj.getImage();
                         Matrix imgMatrix = getGraphicsState().getCurrentTransformationMatrix();
                         float imgXScale = imgMatrix.getScalingFactorX();
@@ -115,9 +112,8 @@ public class PDFUtils
                         float imgPosY = imgMatrix.getTranslateY();
                         images.add(new PdfImage(bImage, new Rectangle(imgPosX, imgPosY, imgXScale, imgYScale)));
                     }
-                    else if (xobject instanceof PDFormXObject)
+                    else if (xobject instanceof PDFormXObject form)
                     {
-                        PDFormXObject form = (PDFormXObject) xobject;
                         showForm(form);
                     }
                 }

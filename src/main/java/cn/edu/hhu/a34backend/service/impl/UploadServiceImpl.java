@@ -54,15 +54,10 @@ public class UploadServiceImpl implements UploadService {
 
         try {
             byte[] decodedBytes = Base64.decodeBase64(uploadParam.getData());
-
             File file = new File(saveFilePath);
-
             FileOutputStream fop = new FileOutputStream(file);
-
             fop.write(decodedBytes);
-
             fop.flush();
-
             fop.close();
 
             PDFUtils.divide(saveFilePath, saveName, tempPath);

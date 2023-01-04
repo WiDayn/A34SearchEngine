@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class IndexPdfParam
 {
+
     String filepath;
 
     long pdfUUID;

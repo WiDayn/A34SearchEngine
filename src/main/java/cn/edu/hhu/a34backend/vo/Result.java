@@ -17,7 +17,11 @@ public class Result implements Serializable {
     private String message;
 
     public static Result success(Object data,String msg){
-        return new Result(true,200,data,msg);
+        return new Result(true,StatusEnum.OPERATION_OK.code, data,msg);
+    }
+
+    public static Result success(Object data){
+        return new Result(true,StatusEnum.OPERATION_OK.code,data,StatusEnum.OPERATION_OK.msg);
     }
 
     public static Result fail(int code,String msg){
@@ -29,7 +33,7 @@ public class Result implements Serializable {
     }
 
     public static Result fail(StatusEnum statusEnum){
-        return new Result(false, statusEnum.getCode(),null, statusEnum.getMsg());
+        return new Result(false, statusEnum.code,null, statusEnum.msg);
     }
 
 

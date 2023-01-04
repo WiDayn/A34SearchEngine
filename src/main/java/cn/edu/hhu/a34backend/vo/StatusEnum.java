@@ -18,8 +18,8 @@ public enum StatusEnum
     FIND_ERROR(90004,"查找失败");
 
 
-    private int code;
-    private String msg;
+    int code;
+    String msg;
 
     StatusEnum(int code, String msg){
         this.code = code;

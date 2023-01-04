@@ -4,7 +4,6 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 
-import java.util.Vector;
 
 @Data
 @Document(indexName = "pdfdoc")
