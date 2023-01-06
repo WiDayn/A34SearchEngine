@@ -227,7 +227,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.3.7.RELEASE</version>
                 <configuration>
-                    <mainClass>cn.edu.hhu.a34backend.A34BackEndApplication</mainClass>
+                    <mainClass>cn.edu.hhu.a34searchengine.A34SearchEngineApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
