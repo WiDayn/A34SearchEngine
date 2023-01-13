@@ -1,6 +1,6 @@
 package cn.edu.hhu.a34searchengine.dao;
 
-import cn.edu.hhu.a34searchengine.pojo.PdfDocPage;
+import cn.edu.hhu.a34searchengine.pojo.PDFDocPage;
 import org.springframework.data.elasticsearch.annotations.Highlight;
 import org.springframework.data.elasticsearch.annotations.HighlightField;
 import org.springframework.data.elasticsearch.annotations.HighlightParameters;
@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-public interface PdfDocRepository extends ElasticsearchRepository<PdfDocPage,String>
+public interface PDFIndexRepository extends ElasticsearchRepository<PDFDocPage,String>
 {
     String findByContentQStr=
             "{\"match\": {"+
@@ -23,5 +23,9 @@ public interface PdfDocRepository extends ElasticsearchRepository<PdfDocPage,Str
            fields = @HighlightField(name="content"),
            parameters = @HighlightParameters(preTags="<em>",postTags = "</em>",fragmentSize = 100)
     )
-    SearchHits<PdfDocPage> findByContent(String content);
+    SearchHits<PDFDocPage> findByContent(String content);
+
+
+
+
 }

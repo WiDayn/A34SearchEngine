@@ -3,16 +3,11 @@ package cn.edu.hhu.a34searchengine.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
-public class SearchResult
+public class Point
 {
-    List<String> highlights;
-
-    int pageNumber;
-
-    long parentPdfUUID;
+    public float x;
+    public float y;
 
 }

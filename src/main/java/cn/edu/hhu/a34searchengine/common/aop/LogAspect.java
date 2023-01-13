@@ -1,7 +1,5 @@
 package cn.edu.hhu.a34searchengine.common.aop;
 
-import cn.edu.hhu.a34searchengine.utils.HttpContextUtils;
-import cn.edu.hhu.a34searchengine.utils.IpUtils;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,7 +10,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
 /**
@@ -70,8 +67,9 @@ public class LogAspect {
         }
 
         //获取request 设置IP地址
+        /*
         HttpServletRequest request = HttpContextUtils.getHttpServletRequest();
-        log.info("ip:{}", IpUtils.getIpAddr(request));
+        log.info("ip:{}", IpUtils.getIpAddr(request));*/
 
         log.info("excute time : {} ms",time);
         log.info("=====================log end================================");

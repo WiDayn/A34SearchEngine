@@ -1,4 +1,4 @@
-package cn.edu.hhu.a34searchengine.utils;
+package cn.edu.hhu.a34searchengine.util;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -9,7 +9,8 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
-public class HTTPUtils {
+public class HTTPUtil
+{
     public static String httpGet(String url,String token) {
         //创建HttpClient对象
         CloseableHttpClient httpClient = HttpClients.createDefault();

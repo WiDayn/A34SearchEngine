@@ -16,6 +16,7 @@ public class A34SearchEngineApplication {
     public static void main(String[] args) {
         SpringApplication.run(A34SearchEngineApplication.class, args);
     }
+    /*
 
     @Bean("restClient")
     public ElasticsearchClient elasticsearchClient() {
@@ -27,6 +28,6 @@ public class A34SearchEngineApplication {
         ElasticsearchClient esClient = new ElasticsearchClient(transport);
 
         return esClient;
-    }
+    }*/
 
 }

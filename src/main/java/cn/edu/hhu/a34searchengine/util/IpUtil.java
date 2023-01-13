@@ -1,4 +1,4 @@
-package cn.edu.hhu.a34searchengine.utils;
+package cn.edu.hhu.a34searchengine.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
@@ -6,7 +6,8 @@ import org.springframework.util.ObjectUtils;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Slf4j
-public class IpUtils {
+public class IpUtil
+{
     /**
      * 获取IP地址
      * <p>

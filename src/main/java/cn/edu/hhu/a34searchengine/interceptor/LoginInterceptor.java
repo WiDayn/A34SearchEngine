@@ -1,6 +1,7 @@
 package cn.edu.hhu.a34searchengine.interceptor;
 
-import cn.edu.hhu.a34searchengine.utils.HTTPUtils;
+import cn.edu.hhu.a34searchengine.util.HTTPUtil;
+import cn.edu.hhu.a34searchengine.util.Timer;
 import cn.edu.hhu.a34searchengine.vo.Result;
 import cn.edu.hhu.a34searchengine.vo.StatusEnum;
 import com.alibaba.fastjson.JSON;
@@ -20,8 +21,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
 
-    @Value("${setting.auth-server.address}")
-    private String authServerAddress;
+    @Value("${setting.auth-server.url}")
+    private String authServerURL;
 
     @Value("${setting.auth-server.auth-key}")
     private String authServerAuthKey;
@@ -29,6 +30,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(@NotNull HttpServletRequest httpServletRequest, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
         //handler可能是资源
+        Timer timer=new Timer();
         if (!(handler instanceof HandlerMethod)){
             return true;
         }
@@ -42,7 +44,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        String jsonResult = HTTPUtils.httpGet(authServerAddress + "/verification/verifyToken?token="+token, authServerAuthKey);
+        String jsonResult = HTTPUtil.httpGet(authServerURL + "?token="+token, authServerAuthKey);
 
         // json转为Result
         Result result = JSONObject.parseObject(jsonResult, Result.class);
@@ -52,7 +54,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             response.getWriter().print(JSON.toJSONString(returnResult));
             return false;
         }
-
+        timer.stop();
         // 放行
         return true;
     }
