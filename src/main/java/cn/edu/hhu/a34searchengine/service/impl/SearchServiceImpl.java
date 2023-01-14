@@ -18,6 +18,7 @@ import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Vector;
 
 @Service
 public class SearchServiceImpl implements SearchService
@@ -39,27 +40,26 @@ public class SearchServiceImpl implements SearchService
         searchResult.setTotalPageCount(searchPage.getTotalPages());
         searchResult.setThisPageNumber(searchPage.getNumber() + 1); ////page从0开始,searchPage.getNumber()==0是第一页
         searchResult.setThisDocCount(searchPage.getNumberOfElements());
-        int docIndex = 0;
-        for (SearchHit<PDFDoc> hit : searchPage.getContent()) {
+        int thisDocIndex = 0;
+        for (SearchHit<PDFDoc> docHit : searchPage.getContent()) {
             int docHighlightCount = 0;
-            DocHit docHit = new DocHit();
-            docHit.setDocInfo(hit.getContent());
-            SearchHits<PDFDocPage> pageSearchHits = (SearchHits<PDFDocPage>) hit.getInnerHits().get("pages"); //注意:key要与dao层设置的键名,entity中的键名保持一致
-            DocHit.PageHit[] pageHitArr = new DocHit.PageHit[(int) pageSearchHits.getTotalHits()];
-            int offset = 0;
-            for (SearchHit<PDFDocPage> pageHit : pageSearchHits) {
-                pageHitArr[offset] = docHit.new PageHit();
-                pageHitArr[offset].setPageNumber(pageHit.getContent().getPageNumber());
+            DocHit thisDocHit = new DocHit();
+            thisDocHit.setDocInfo(docHit.getContent());
+            SearchHits<PDFDocPage> pageHits = (SearchHits<PDFDocPage>) docHit.getInnerHits().get("pages"); //注意:key要与dao层设置的键名,entity中的键名保持一致
+            Vector<DocHit.PageHit> hits=new Vector<>();
+            for (SearchHit<PDFDocPage> pageHit : pageHits) {
+                DocHit.PageHit hit=thisDocHit.new PageHit();
+                hit.setPageNumber(pageHit.getContent().getPageNumber());
                 List<String> highlights = pageHit.getHighlightField("pages.content");
-                pageHitArr[offset].setHighlights(highlights.toArray(new String[0]));
-                pageHitArr[offset].setHighlightCount(highlights.size());
+                hit.setHighlights(highlights.toArray(new String[0]));
+                hit.setHighlightCount(highlights.size());
                 docHighlightCount += highlights.size();
-                ++offset;
+                hits.add(hit);
             }
-            docHit.setPageHits(pageHitArr);
-            docHit.setHighlightCount(docHighlightCount);
-            searchResult.setDocHit(docHit, docIndex);
-            ++docIndex;
+            thisDocHit.setPageHits(hits.toArray(new DocHit.PageHit[0]));
+            thisDocHit.setHighlightCount(docHighlightCount);
+            searchResult.setDocHit(thisDocHit, thisDocIndex);
+            ++thisDocIndex;
         }
         timer.stop();
         return searchResult;

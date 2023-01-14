@@ -38,6 +38,19 @@ public class PDFFileDaoImpl implements PDFFileDao
         return bytes;
     }
 
+    @Override
+    public InputStream getPDFInputStream(String bucketName, String pdfFileName)
+            throws Exception
+    {
+        GetObjectResponse response=minioClient.getObject(
+                GetObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object(pdfFileName)
+                        .build()
+        );
+        return response;
+    }
+
 
     @Override
     public String getPDFFileDownloadURL(String bucketName, String pdfFileName)

@@ -14,10 +14,15 @@
     <name>A34SearchEngine</name>
     <description>A34SearchEngine</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>19</java.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
 
         <dependency>
             <groupId>com.itextpdf</groupId>
@@ -25,6 +30,7 @@
             <version>7.2.4</version>
             <type>pom</type>
         </dependency>
+        
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>

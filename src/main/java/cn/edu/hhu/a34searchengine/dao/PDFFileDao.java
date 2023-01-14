@@ -8,6 +8,9 @@ public interface PDFFileDao
     byte[] getPDFData(String bucketName, String pdfFileName)
             throws Exception;
 
+    InputStream getPDFInputStream(String bucketName, String pdfFileName)
+            throws Exception;
+
 
     String getPDFFileDownloadURL(String bucketName, String pdfFileName)
             throws Exception;

@@ -58,7 +58,7 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         org.springframework.data.elasticsearch.core.query.highlight.Highlight highlight=new org.springframework.data.elasticsearch.core.query.highlight.Highlight(List.of(highlightField));
         highlightArticleAbstract =new HighlightQuery(highlight,null);
 
-        HighlightField.Builder pagesimageTextsHFB=new HighlightField.Builder().matchedFields("pages.imageTexts");
+        HighlightField.Builder pagesImageTextsHFB=new HighlightField.Builder().matchedFields("pages.imageTexts");
         HighlightField.Builder pagesContentHFB=new HighlightField.Builder().matchedFields("pages.content");
         Highlight.Builder highlightBuilder=new Highlight.Builder()
                 .fragmentSize(100)
@@ -70,17 +70,15 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
                 .postTags("</em>");
         MatchQuery.Builder matchQB=new MatchQuery.Builder();
         Highlight.Builder highlightPagesContentBuilder=highlightBuilder.fields("pages.content",pagesContentHFB.build());
-        Highlight.Builder highlightPagesimageTextsBuilder=highlightBuilder2.fields("pages.imageTexts",pagesimageTextsHFB.build());
-        highlightPagesImageTexts =highlightPagesimageTextsBuilder.build();
+        Highlight.Builder highlightPagesImageTextsBuilder=highlightBuilder2.fields("pages.imageTexts",pagesImageTextsHFB.build());
+        highlightPagesImageTexts =highlightPagesImageTextsBuilder.build();
         highlightPagesContent=highlightPagesContentBuilder.build();
     }
 
     //关于NativeQueryBuilder的基本公用设置,抽取出来以美化代码
     //设置排除字段,分页,排名规则,得分规则,缓存等
-
     private NativeQueryBuilder _assembleNativeQuery()
     {
-        Timer timer=new Timer();
         NativeQueryBuilder nativeQB = NativeQuery.builder();
         nativeQB.withSourceFilter(new SourceFilter()
         {
@@ -97,7 +95,6 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
             }
         });
        // nativeQB.withRequestCache(true);
-        timer.stop();
         return nativeQB;
     }
 

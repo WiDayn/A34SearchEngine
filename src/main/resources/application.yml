@@ -24,6 +24,7 @@ spring:
     # 连接超时时间。默认值为30s
     connection-timeout: 30000
 
+
   elasticsearch:
     uris: http://127.0.0.1:9200
     host: 127.0.0.1:9200
@@ -33,6 +34,10 @@ spring:
     redis:
       host: 127.0.0.1
       port: 6379
+      password: admin12345
+      database: 4
+
+
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -47,6 +52,8 @@ setting:
   datacenter-id: 1
   pdf-file-path: 'F:/static/pdf'
   pdf-temp-path: 'F:/static/temp'
+  PDFData:
+    expireTimeoutMinutes: 1
   auth-server:
     url: http://127.0.0.1:8855/verification/verifyToken
     auth-key: AGLQwrl9gzazdAgv

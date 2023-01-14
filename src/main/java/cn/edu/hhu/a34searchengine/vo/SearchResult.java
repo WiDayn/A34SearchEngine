@@ -8,7 +8,6 @@ import lombok.Data;
 @JsonView(SearchResult.SearchResultView.class)
 public class SearchResult
 {
-
     private long totalDocCount;             //总命中的文档数,包括其他页的
 
     private int totalPageCount;              //页数
