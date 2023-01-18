@@ -12,6 +12,6 @@ public interface PDFDocIndexDao
 
     SearchPage<PDFDoc> searchInContent(String keywords, SearchCondition condition, Pageable pageRequest);
 
-    SearchPage<PDFDoc> searchInAbstracts(String keywords, SearchCondition condition, Pageable pageRequest);
-    SearchPage<PDFDoc> searchInImageTexts(String keywords, SearchCondition condition, Pageable pageRequest);
+    SearchPage<PDFDoc> searchInAbstract(String keywords, SearchCondition condition, Pageable pageRequest);
+    SearchPage<PDFDoc> searchInImageText(String keywords, SearchCondition condition, Pageable pageRequest);
 }

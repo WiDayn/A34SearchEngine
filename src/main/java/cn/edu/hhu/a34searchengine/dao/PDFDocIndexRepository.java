@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-public interface PDFIndexRepository extends ElasticsearchRepository<PDFDocPage,String>
+public interface PDFDocIndexRepository extends ElasticsearchRepository<PDFDocPage,String>
 {
     String findByContentQStr=
             "{\"match\": {"+

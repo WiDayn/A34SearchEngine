@@ -1,7 +1,5 @@
 package cn.edu.hhu.a34searchengine.pojo;
 
-import cn.edu.hhu.a34searchengine.dto.DocHit;
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
@@ -19,10 +17,10 @@ public class PDFDocPage
     @Field(type = FieldType.Long, index = false, store = false)
     private int pageNumber;
 
-    @Field(type = FieldType.Text, index = true, store = true, analyzer = "ik_smart" , excludeFromSource = true)
+    @Field(type = FieldType.Text, index = true, store = true, analyzer = "ik_smart")
     private String content;                     //高亮功能store必须为true
 
-    @Field(type = FieldType.Object, store = true, excludeFromSource = true)
+    @Field(type = FieldType.Object)
     private PDFImageText[] imageTexts;
 
     @Field(type = FieldType.Integer,store = false,index = false)

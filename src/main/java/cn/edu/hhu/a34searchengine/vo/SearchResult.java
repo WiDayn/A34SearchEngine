@@ -1,6 +1,5 @@
 package cn.edu.hhu.a34searchengine.vo;
 
-import cn.edu.hhu.a34searchengine.dto.DocHit;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 

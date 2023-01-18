@@ -35,6 +35,14 @@ public class FileUtil
         fop.close();
     }
 
+    public static void openAndAppend(String filePath,byte[] bytes) throws IOException
+    {
+        RandomAccessFile raf = new RandomAccessFile(filePath, "rw");
+        raf.seek(raf.length());
+        raf.write(bytes);
+        raf.close();
+    }
+
     public static byte[] openAndRead(String filePath) throws IOException
     {
         File file = new File(filePath);

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("search")
 public class SearchController
@@ -24,10 +26,10 @@ public class SearchController
 
     @GetMapping("content")
     @JsonView(SearchResult.SearchResultView.class)
-    public Result searchInContent(String queryString, SearchCondition condition, int page)
+    public Result searchInContent(String queryString, SearchCondition condition, int page) throws IOException
     {
         Timer timer=new Timer();                //page从0开始,page==0是第一页,参数page=1时,访问的是第2页
-        Result result=searchService.searchInContent(queryString,condition, PageRequest.of(page - 1,5)); //每页5个元素
+        Result result=searchService.searchInContent(queryString,condition, PageRequest.of(page - 1,10)); //每页10个元素
         timer.stop();
         return result;
     }
@@ -36,14 +38,14 @@ public class SearchController
     @JsonView(SearchResult.SearchResultView.class)
     public Result searchInAbstract(String queryString, SearchCondition condition, int page)
     {                                                                                           //page从0开始,page==0是第一页,参数page=1时,访问的是第2页
-        return searchService.searchInContent(queryString, condition, PageRequest.of(page - 1, 5));
+        return searchService.searchInAbstract(queryString, condition, PageRequest.of(page - 1, 5));
     }
 
-    @GetMapping("imageTexts")
+    @GetMapping("imageText")
     @JsonView(SearchResult.SearchResultView.class)
-    public Result searchInImageTexts(String queryString, SearchCondition condition, int page)
+    public Result searchInImageText(String queryString, SearchCondition condition, int page)
     {                                                                                           //page从0开始,page==0是第一页,参数page=1时,访问的是第2页
-        return searchService.searchInContent(queryString,condition, PageRequest.of(page - 1,5));
+        return searchService.searchInImageText(queryString,condition, PageRequest.of(page - 1,5));
     }
 
 

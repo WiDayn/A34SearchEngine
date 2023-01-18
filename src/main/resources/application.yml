@@ -30,12 +30,6 @@ spring:
     host: 127.0.0.1:9200
     username: elastic
     password: kiminouso030221
-  data:
-    redis:
-      host: 127.0.0.1
-      port: 6379
-      password: admin12345
-      database: 4
 
 
 mybatis-plus:
@@ -57,7 +51,18 @@ setting:
   auth-server:
     url: http://127.0.0.1:8855/verification/verifyToken
     auth-key: AGLQwrl9gzazdAgv
-
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: admin12345
+  database4: 4
+  database1: 1
+  doc-feedback:
+    key-prefix:
+      preference: p
+      extraction-count: e
+      visit-count: v
+    key-prefix-separator: _ #键的前缀和键之间的分隔符
 minio:
   endpoint: http://127.0.0.1:9000
   access-key: admin

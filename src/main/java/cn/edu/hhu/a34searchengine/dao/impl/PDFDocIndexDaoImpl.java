@@ -6,6 +6,7 @@ import cn.edu.hhu.a34searchengine.pojo.PDFDoc;
 import cn.edu.hhu.a34searchengine.pojo.PDFDocPage;
 import cn.edu.hhu.a34searchengine.util.Timer;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.ScriptLanguage;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.search.Highlight;
 import co.elastic.clients.elasticsearch.core.search.HighlightField;
@@ -20,7 +21,6 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.SearchPage;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.HighlightQuery;
@@ -30,6 +30,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 @Repository
@@ -95,6 +96,7 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
             }
         });
        // nativeQB.withRequestCache(true);
+
         return nativeQB;
     }
 
@@ -104,6 +106,8 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
     public BoolQuery.Builder _assembleConditionQuery(SearchCondition condition)
     {
         Timer timer=new Timer();
+        FunctionScoreQuery.Builder functionScoreQuery=new FunctionScoreQuery.Builder();
+
         BoolQuery.Builder boolQB = new BoolQuery.Builder();
         if (condition.getAuthors() != null) {
             BoolQuery.Builder subBoolQB = QueryBuilders.bool();
@@ -150,6 +154,28 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         return searchPage;
     }
 
+    private SearchPage<PDFDoc> _buildSearch(NativeQueryBuilder nativeQB,ScriptScoreQuery.Builder scriptScoreQB,Pageable pageRequest)
+    {
+        Timer timer=new Timer();
+        nativeQB.withQuery(q -> q.scriptScore(scriptScoreQB.build())).withPageable(pageRequest);
+        SearchHits<PDFDoc> searchHits = elasticsearchOperations.search(nativeQB.build(), PDFDoc.class);
+        SearchPage<PDFDoc> searchPage = SearchHitSupport.searchPageFor(searchHits, nativeQB.getPageable());
+        timer.stop();
+        return searchPage;
+    }
+
+
+    private ScriptScoreQuery.Builder _getScriptScoreQueryBuilder()  //注意与DocHit.Scores.setScores()保持一致
+    {
+        ScriptScoreQuery.Builder scriptScoreQB=new ScriptScoreQuery.Builder();
+        final String originalScoreCastFunc="0.9*saturation(_score, 7)+0.1";
+        final String preferenceCastFunc="1/(1+Math.exp(-0.25*(doc['preference'].value-30)))";
+        final String script="params.wRelevance*"+originalScoreCastFunc+"+params.wClickRate*doc['clickRate'].value+params.wPreference*" + preferenceCastFunc;
+        Map<String,JsonData> params= Map.of("wRelevance",JsonData.of(60),"wClickRate",JsonData.of(30),"wPreference",JsonData.of(10));
+        scriptScoreQB.script(f->f.inline(i->i.lang(ScriptLanguage.Painless).params(params).source(script)));
+        return scriptScoreQB;
+    }
+
     @Override
     public SearchPage<PDFDoc> searchInContent(String keywords, SearchCondition condition, Pageable pageRequest)
     {
@@ -160,17 +186,21 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         BoolQuery.Builder boolQB=_assembleConditionQuery(condition);
         //构造nested嵌入文档查询
         NestedQuery.Builder pagesContentNQB = new NestedQuery.Builder().path("pages")  //设置路径为 nested对象 pages
-                .innerHits(i -> i.name("pages").highlight(highlightPagesContent).source(s -> s.filter(f -> f.excludes("pages.content"))));
+                .innerHits(i -> i.fields("pages").highlight(highlightPagesContent).source(s -> s.filter(f -> f.excludes("pages.content"))));
                 //设置嵌入文档的命中作为innerHits返回,这样才能得到页号,单页命中等信息        设置嵌套文档pages中的content字段不要返回,节省带宽
-        boolQB.must(q -> q.nested(pagesContentNQB.query(q2 -> q2.match(m -> m.field("pages.content").query(keywords).fuzziness("auto"))).build()));
-        nativeQB.withHighlightQuery(highlightArticleAbstract);
+
+        boolQB.must(q -> q.nested(pagesContentNQB.query(q3 -> q3.match(m -> m.field("pages.content")
+                        .query(keywords).fuzziness("auto")))
+                        .build()));
+        ScriptScoreQuery.Builder scriptScoreQB=_getScriptScoreQueryBuilder();
+        scriptScoreQB.query(f->f.bool(boolQB.build()));
         //构造查询,发送到elasticsearch并返回结果
-        SearchPage<PDFDoc> searchPage =_buildSearch(nativeQB,boolQB,pageRequest);
+        SearchPage<PDFDoc> searchPage =_buildSearch(nativeQB,scriptScoreQB,pageRequest);
         timer.stop();
         return searchPage;
     }
     @Override
-    public SearchPage<PDFDoc> searchInImageTexts(String keywords, SearchCondition condition, Pageable pageRequest)
+    public SearchPage<PDFDoc> searchInImageText(String keywords, SearchCondition condition, Pageable pageRequest)
     {
         //注入查询配置
         NativeQueryBuilder nativeQB = _assembleNativeQuery();
@@ -185,13 +215,14 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
     }
 
     @Override
-    public SearchPage<PDFDoc> searchInAbstracts(String keywords, SearchCondition condition, Pageable pageRequest)
+    public SearchPage<PDFDoc> searchInAbstract(String keywords, SearchCondition condition, Pageable pageRequest)
     {
         //注入查询配置
         NativeQueryBuilder nativeQB = _assembleNativeQuery();
         //注入查询条件
         BoolQuery.Builder boolQB=_assembleConditionQuery(condition);
         boolQB.must(q -> q.match(m -> m.field("articleAbstract").query(keywords).fuzziness("auto")));
+        nativeQB.withHighlightQuery(highlightArticleAbstract);
         //构造查询,发送到elasticsearch并返回结果
         return _buildSearch(nativeQB,boolQB,pageRequest);
     }

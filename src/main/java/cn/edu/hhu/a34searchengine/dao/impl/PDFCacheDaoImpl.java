@@ -5,6 +5,7 @@ import cn.edu.hhu.a34searchengine.dao.PDFCacheDao;
 import cn.edu.hhu.a34searchengine.pojo.PDFData;
 import cn.edu.hhu.a34searchengine.util.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -14,7 +15,7 @@ import java.time.Duration;
 @Repository
 public class PDFCacheDaoImpl implements PDFCacheDao
 {
-
+    @Qualifier("RedisDatabase4")
     @Autowired
     RedisTemplate<Long, Object> redisTemplate;
 
