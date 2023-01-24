@@ -1,10 +1,14 @@
 package cn.edu.hhu.a34searchengine.util;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public class SnowFlake {
     // 因为二进制里第一个 bit 为如果是 1，那么都是负数，但是我们生成的 id 都是正数，所以第一个 bit 统一都是 0。
 
+    @Value("${settings.worker-id}")
     private final long workerId;
 
+    @Value("${settings.datacenter-id}")
     private final long datacenterId;
 
     private long sequence;

@@ -40,12 +40,11 @@ mybatis-plus:
     db-config:
       id-type: auto
 
-setting:
+
+settings:
   debug-level: 1
-  work-id: 1
+  worker-id: 1
   datacenter-id: 1
-  pdf-file-path: 'F:/static/pdf'
-  pdf-temp-path: 'F:/static/temp'
   PDFData:
     expireTimeoutMinutes: 1
   auth-server:
@@ -55,8 +54,9 @@ redis:
   host: 127.0.0.1
   port: 6379
   password: admin12345
-  database4: 4
-  database1: 1
+  database:
+    for-doc-feedback: 1
+    for-pdf-cache: 4
   doc-feedback:
     key-prefix:
       preference: p
@@ -68,4 +68,6 @@ minio:
   access-key: admin
   secret-key: admin12345
   buckets: pdf, pdf2
+
+
 

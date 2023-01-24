@@ -15,11 +15,11 @@ import java.time.Duration;
 @Repository
 public class PDFCacheDaoImpl implements PDFCacheDao
 {
-    @Qualifier("RedisDatabase4")
+    @Qualifier("ForPDFCache")
     @Autowired
     RedisTemplate<Long, Object> redisTemplate;
 
-    @Value("${setting.PDFData.expireTimeoutMinutes}")
+    @Value("${settings.PDFData.expireTimeoutMinutes}")
     long expireTimeout;
 
     @Override

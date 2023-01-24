@@ -7,12 +7,7 @@ import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.http.Method;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FilterInputStream;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 

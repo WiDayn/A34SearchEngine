@@ -28,6 +28,7 @@ import org.springframework.data.elasticsearch.core.query.SourceFilter;
 import org.springframework.data.elasticsearch.core.query.highlight.HighlightFieldParameters;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +44,8 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
     ElasticsearchOperations elasticsearchOperations;
 
     private final HighlightQuery highlightArticleAbstract;
-    private final Highlight highlightPagesContent;
-    private final Highlight highlightPagesImageTexts;
+    private final Highlight contentHighlighter;
+    private final Highlight imageTextsHighlighter;
 
     //有两个包定义了Highlight类,不能互转,函数用到了两个包中的Highlight, 写起来麻烦. 故抽取构造高亮查询部分的代码,作为成员常量提前写入
     public PDFDocIndexDaoImpl()
@@ -59,7 +60,7 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         org.springframework.data.elasticsearch.core.query.highlight.Highlight highlight=new org.springframework.data.elasticsearch.core.query.highlight.Highlight(List.of(highlightField));
         highlightArticleAbstract =new HighlightQuery(highlight,null);
 
-        HighlightField.Builder pagesImageTextsHFB=new HighlightField.Builder().matchedFields("pages.imageTexts");
+        HighlightField.Builder pagesImageTextsHFB=new HighlightField.Builder().matchedFields("pages.imageTexts.text");
         HighlightField.Builder pagesContentHFB=new HighlightField.Builder().matchedFields("pages.content");
         Highlight.Builder highlightBuilder=new Highlight.Builder()
                 .fragmentSize(100)
@@ -71,13 +72,13 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
                 .postTags("</em>");
         MatchQuery.Builder matchQB=new MatchQuery.Builder();
         Highlight.Builder highlightPagesContentBuilder=highlightBuilder.fields("pages.content",pagesContentHFB.build());
-        Highlight.Builder highlightPagesImageTextsBuilder=highlightBuilder2.fields("pages.imageTexts",pagesImageTextsHFB.build());
-        highlightPagesImageTexts =highlightPagesImageTextsBuilder.build();
-        highlightPagesContent=highlightPagesContentBuilder.build();
+        Highlight.Builder highlightPagesImageTextsBuilder=highlightBuilder2.fields("pages.imageTexts.text",pagesImageTextsHFB.build());
+        imageTextsHighlighter =highlightPagesImageTextsBuilder.build();
+        contentHighlighter =highlightPagesContentBuilder.build();
     }
 
     //关于NativeQueryBuilder的基本公用设置,抽取出来以美化代码
-    //设置排除字段,分页,排名规则,得分规则,缓存等
+    //设置排除字段,缓存等
     private NativeQueryBuilder _assembleNativeQuery()
     {
         NativeQueryBuilder nativeQB = NativeQuery.builder();
@@ -101,8 +102,6 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
     }
 
     //将SearchCondition翻译为elasticsearch的查询条件
-
-
     public BoolQuery.Builder _assembleConditionQuery(SearchCondition condition)
     {
         Timer timer=new Timer();
@@ -143,25 +142,14 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         return boolQB;
     }
 
-
-    private SearchPage<PDFDoc> _buildSearch(NativeQueryBuilder nativeQB,BoolQuery.Builder boolQB,Pageable pageRequest)
+    //将几种Query综合build
+    private NativeQuery _buildSearch(NativeQueryBuilder nativeQB,BoolQuery.Builder boolQB,ScriptScoreQuery.Builder scriptScoreQB,Pageable pageRequest)
     {
         Timer timer=new Timer();
-        nativeQB.withQuery(q -> q.bool(boolQB.build())).withPageable(pageRequest);
-        SearchHits<PDFDoc> searchHits = elasticsearchOperations.search(nativeQB.build(), PDFDoc.class);
-        SearchPage<PDFDoc> searchPage = SearchHitSupport.searchPageFor(searchHits, nativeQB.getPageable());
-        timer.stop();
-        return searchPage;
-    }
-
-    private SearchPage<PDFDoc> _buildSearch(NativeQueryBuilder nativeQB,ScriptScoreQuery.Builder scriptScoreQB,Pageable pageRequest)
-    {
-        Timer timer=new Timer();
+        scriptScoreQB.query(f->f.bool(boolQB.build()));
         nativeQB.withQuery(q -> q.scriptScore(scriptScoreQB.build())).withPageable(pageRequest);
-        SearchHits<PDFDoc> searchHits = elasticsearchOperations.search(nativeQB.build(), PDFDoc.class);
-        SearchPage<PDFDoc> searchPage = SearchHitSupport.searchPageFor(searchHits, nativeQB.getPageable());
         timer.stop();
-        return searchPage;
+        return nativeQB.build();
     }
 
 
@@ -176,6 +164,24 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         return scriptScoreQB;
     }
 
+
+    private NestedQuery.Builder _getPagesContentNQB(){
+        return new NestedQuery.Builder().path("pages")  //设置路径为 nested对象 pages
+                .innerHits(i -> i.fields("pages").highlight(contentHighlighter).source(s -> s.filter(f -> f.excludes("pages.content","pages.imageTexts"))));
+        //设置嵌入文档的命中作为innerHits返回,这样才能得到页号,单页命中等信息        设置嵌套文档pages中的content字段不要返回,节省带宽
+    }
+
+    private NestedQuery.Builder _getNestedQueryBuilder(String path, String innerHitsField,Highlight highlighter, String ...excludes){
+        return new NestedQuery.Builder().path(path)  //设置路径为 nested对象 pages
+                .innerHits(i -> i.fields(innerHitsField).highlight(highlighter).source(s -> s.filter(f -> f.excludes(Arrays.asList(excludes)))));
+        //设置嵌入文档的命中作为innerHits返回,这样才能得到页号,单页命中等信息        设置嵌套文档pages中的content字段不要返回,节省带宽
+    }
+
+
+    private void _injectNestedQuery(BoolQuery.Builder boolQB,NestedQuery.Builder nestedQB,String queryKeywords, String field,String fuzziness){
+        boolQB.should(q -> q.nested(nestedQB.query(q2 -> q2.match(m -> m.field(field).query(queryKeywords).fuzziness(fuzziness))).build()));
+    }
+
     @Override
     public SearchPage<PDFDoc> searchInContent(String keywords, SearchCondition condition, Pageable pageRequest)
     {
@@ -184,47 +190,79 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         NativeQueryBuilder nativeQB = _assembleNativeQuery();
         //注入查询条件
         BoolQuery.Builder boolQB=_assembleConditionQuery(condition);
-        //构造nested嵌入文档查询
-        NestedQuery.Builder pagesContentNQB = new NestedQuery.Builder().path("pages")  //设置路径为 nested对象 pages
-                .innerHits(i -> i.fields("pages").highlight(highlightPagesContent).source(s -> s.filter(f -> f.excludes("pages.content"))));
-                //设置嵌入文档的命中作为innerHits返回,这样才能得到页号,单页命中等信息        设置嵌套文档pages中的content字段不要返回,节省带宽
+        //构造NestedQuery查询pdf正文
+        NestedQuery.Builder pagesContentNQB = _getNestedQueryBuilder("pages","pages", contentHighlighter,"pages.content","pages.imageTexts");
+        //构造NestedQuery查询图片中的文字
+        NestedQuery.Builder imageTextsNQB = _getNestedQueryBuilder("pages.imageTexts","pages.imageTexts", imageTextsHighlighter,"pages.imageTexts.text");
 
-        boolQB.must(q -> q.nested(pagesContentNQB.query(q3 -> q3.match(m -> m.field("pages.content")
-                        .query(keywords).fuzziness("auto")))
-                        .build()));
+        //注入查询pdf正文的NestedQuery
+        _injectNestedQuery(boolQB,pagesContentNQB,keywords,"pages.content","auto");
+
+        //注入查询来自图片的文本的NestedQuery
+        _injectNestedQuery(boolQB,imageTextsNQB,keywords,"pages.imageTexts.text","auto");
+
+        //获取打分规则
         ScriptScoreQuery.Builder scriptScoreQB=_getScriptScoreQueryBuilder();
-        scriptScoreQB.query(f->f.bool(boolQB.build()));
-        //构造查询,发送到elasticsearch并返回结果
-        SearchPage<PDFDoc> searchPage =_buildSearch(nativeQB,scriptScoreQB,pageRequest);
+
+        //构造查询
+        NativeQuery query = _buildSearch(nativeQB,boolQB,scriptScoreQB,pageRequest);
+
+        SearchHits<PDFDoc> searchHits = elasticsearchOperations.search(query, PDFDoc.class);
+        SearchPage<PDFDoc> searchPage = SearchHitSupport.searchPageFor(searchHits, pageRequest);
         timer.stop();
         return searchPage;
     }
     @Override
     public SearchPage<PDFDoc> searchInImageText(String keywords, SearchCondition condition, Pageable pageRequest)
     {
+        Timer timer=new Timer();
         //注入查询配置
         NativeQueryBuilder nativeQB = _assembleNativeQuery();
         //注入查询条件
         BoolQuery.Builder boolQB=_assembleConditionQuery(condition);
-        NestedQuery.Builder pagesContentNQB = new NestedQuery.Builder().path("pages")  //设置路径为 nested对象 pages
-                .innerHits(i -> i.name("pages").highlight(highlightPagesImageTexts).source(s -> s.filter(f -> f.excludes("pages.imageTexts"))));
-        //设置嵌入文档的命中作为innerHits返回,这样才能得到页号,单页命中等信息        设置嵌套文档pages中的content字段不要返回,节省带宽
-        boolQB.must(q -> q.nested(pagesContentNQB.query(q2 -> q2.match(m -> m.field("pages.imageTexts").query(keywords).fuzziness("auto"))).build()));
-        //构造查询,发送到elasticsearch并返回结果
-        return _buildSearch(nativeQB,boolQB,pageRequest);
+
+        //构造NestedQuery查询图片中的文字
+        NestedQuery.Builder imageTextsNQB = _getNestedQueryBuilder("pages.imageTexts","pages.imageTexts", imageTextsHighlighter,"pages.imageTexts.text");
+
+        //注入查询来自图片的文本的NestedQuery
+        _injectNestedQuery(boolQB,imageTextsNQB,keywords,"pages.imageTexts.text","auto");
+
+        //获取打分规则
+        ScriptScoreQuery.Builder scriptScoreQB=_getScriptScoreQueryBuilder();
+
+        //构造查询
+        NativeQuery query = _buildSearch(nativeQB,boolQB,scriptScoreQB,pageRequest);
+
+        SearchHits<PDFDoc> searchHits = elasticsearchOperations.search(query, PDFDoc.class);
+        SearchPage<PDFDoc> searchPage = SearchHitSupport.searchPageFor(searchHits, pageRequest);
+        timer.stop();
+        return searchPage;
     }
 
     @Override
     public SearchPage<PDFDoc> searchInAbstract(String keywords, SearchCondition condition, Pageable pageRequest)
     {
+        Timer timer=new Timer();
         //注入查询配置
         NativeQueryBuilder nativeQB = _assembleNativeQuery();
         //注入查询条件
         BoolQuery.Builder boolQB=_assembleConditionQuery(condition);
+
+        //设置查询字段为摘要
         boolQB.must(q -> q.match(m -> m.field("articleAbstract").query(keywords).fuzziness("auto")));
+        //设置高亮
         nativeQB.withHighlightQuery(highlightArticleAbstract);
-        //构造查询,发送到elasticsearch并返回结果
-        return _buildSearch(nativeQB,boolQB,pageRequest);
+
+        //获取打分规则
+        ScriptScoreQuery.Builder scriptScoreQB=_getScriptScoreQueryBuilder();
+
+        //构造查询
+        NativeQuery query = _buildSearch(nativeQB,boolQB,scriptScoreQB,pageRequest);
+
+        SearchHits<PDFDoc> searchHits = elasticsearchOperations.search(query, PDFDoc.class);
+        SearchPage<PDFDoc> searchPage = SearchHitSupport.searchPageFor(searchHits, pageRequest);
+        timer.stop();
+        return searchPage;
     }
 
 

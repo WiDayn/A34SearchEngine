@@ -1,39 +1,27 @@
 package cn.edu.hhu.a34searchengine.pojo;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.*;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 
 @Data
 public class PDFDocPage
 {
-    @Id
-    @Field(type = FieldType.Long, index = false, store = false)
-    private long id;
-    @Field(type = FieldType.Long, index = false, store = false)
-    private long parentPdfUUID;
-
-    @Field(type = FieldType.Long, index = false, store = false)
+    @Field(type = FieldType.Integer, index = false, store = false)
     private int pageNumber;
 
     @Field(type = FieldType.Text, index = true, store = true, analyzer = "ik_smart")
     private String content;                     //高亮功能store必须为true
 
-    @Field(type = FieldType.Object)
-    private PDFImageText[] imageTexts;
-
-    @Field(type = FieldType.Integer,store = false,index = false)
-    private int userFeedback;               //用户反馈(点赞点踩)
-
+    @Field(type = FieldType.Nested)
+    protected PDFImageText[] imageTexts;
     public PDFDocPage() {}
 
     public PDFDocPage(long parentPdfUUID, int pageNumber, String content)
     {
-        this.parentPdfUUID = parentPdfUUID;
         this.pageNumber = pageNumber;
         this.content = content;
-        this.id=pageNumber;
     }
 
 }

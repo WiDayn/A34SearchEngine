@@ -56,8 +56,6 @@ public class PDFDoc
     @Field(type = FieldType.Keyword,index = false, store = false)
     @JsonView(SearchResult.SearchResultView.class)
     protected String doi;
-    @Field(type = FieldType.Nested)
-    protected PDFDocPage[] pages;
 
     @Field(type = FieldType.Float,index = false, store = false)
     protected float clickRate;              //文档的点击率, 每日更新一次   文档的被提取次数和被访问次数存储在mysql中
@@ -65,6 +63,9 @@ public class PDFDoc
     @Field(type = FieldType.Float,index = false, store = false)
     protected float preference;             //文档的用户反馈会影响这个数值
 
+
+    @Field(type = FieldType.Nested)
+    protected PDFDocPage[] pages;
 
 }
 

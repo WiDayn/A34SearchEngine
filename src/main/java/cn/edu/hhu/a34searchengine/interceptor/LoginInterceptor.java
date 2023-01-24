@@ -21,10 +21,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
 
-    @Value("${setting.auth-server.url}")
+    @Value("${settings.auth-server.url}")
     private String authServerURL;
 
-    @Value("${setting.auth-server.auth-key}")
+    @Value("${settings.auth-server.auth-key}")
     private String authServerAuthKey;
 
     @Override

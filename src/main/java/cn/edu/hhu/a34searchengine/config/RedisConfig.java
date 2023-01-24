@@ -15,11 +15,11 @@ import redis.clients.jedis.JedisPoolConfig;
 @Configuration
 public class RedisConfig
 {
-    @Value("${redis.database1}")
-    private int database1;
+    @Value("${redis.database.for-doc-feedback}")
+    private int DBForDocFeedback;
 
-    @Value("${redis.database4}")
-    private int database4;
+    @Value("${redis.database.for-pdf-cache}")
+    private int DBForPDFCache;
 
     @Value("${redis.host}")
     private String host;
@@ -69,7 +69,7 @@ public class RedisConfig
     }
 
 
-    @Bean("RedisDatabase1")
+    @Bean("ForDocFeedback")
     public RedisTemplate<String, Object> getRedisTemplate()
     {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
@@ -77,11 +77,11 @@ public class RedisConfig
         redisTemplate.setValueSerializer(RedisSerializer.json());
         redisTemplate.setHashKeySerializer(RedisSerializer.string());
         redisTemplate.setHashValueSerializer(RedisSerializer.json());
-        redisTemplate.setConnectionFactory(getRedisConnectionFactory(getJedisPoolConfig(), database1));
+        redisTemplate.setConnectionFactory(getRedisConnectionFactory(getJedisPoolConfig(), DBForDocFeedback));
         return redisTemplate;
     }
 
-    @Bean("RedisDatabase4")
+    @Bean("ForPDFCache")
     public RedisTemplate<Long, Object> getRedisTemplate2()
     {
         RedisTemplate<Long, Object> redisTemplate = new RedisTemplate<>();
@@ -89,7 +89,7 @@ public class RedisConfig
         redisTemplate.setValueSerializer(RedisSerializer.json());
         redisTemplate.setHashKeySerializer(RedisSerializer.java());
         redisTemplate.setHashValueSerializer(RedisSerializer.json());
-        redisTemplate.setConnectionFactory(getRedisConnectionFactory(getJedisPoolConfig(), database4));
+        redisTemplate.setConnectionFactory(getRedisConnectionFactory(getJedisPoolConfig(), DBForPDFCache));
         return redisTemplate;
     }
 }

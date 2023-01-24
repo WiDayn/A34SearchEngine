@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 @Component
 @Slf4j
 public class LogAspect {
-    @Value("${setting.debug-level}")
+    @Value("${settings.debug-level}")
     private int debugLevel;
 
     @Pointcut("@annotation(cn.edu.hhu.a34searchengine.common.aop.LogAnnotation)")

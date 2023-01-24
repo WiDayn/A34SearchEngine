@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public class DocFeedbackDaoImpl implements DocFeedbackDao
 {
 
-    @Qualifier("RedisDatabase1")
+    @Qualifier("ForDocFeedback")
     @Autowired
     RedisTemplate<String,Object> redisTemplate;
 
