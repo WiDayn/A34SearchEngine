@@ -6,6 +6,7 @@ import cn.edu.hhu.a34searchengine.util.HttpContextUtil;
 import cn.edu.hhu.a34searchengine.vo.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.*;
 
 @RestController
-@RequestMapping("document")
+@RequestMapping("onlineLoad")
+@Slf4j
 public class DocLoadController
 {
 
@@ -24,12 +26,13 @@ public class DocLoadController
     @GetMapping("{pdfUUID}")
     public void loadOnline(@PathVariable long pdfUUID , @NotNull HttpServletResponse response, HttpServletRequest request) throws Exception
     {
+        log.info("load");
         HttpContextUtil.respondDataStream(response,request,docLoadService.getPDFDataInputStream(pdfUUID));
     }
 
 
     //当前端点进去某一个pdf想查看搜索详情时,发送这个请求,这个请求会预先对pdf分页并放入缓存(如果已分页则直接忽略)
-    @PostMapping("{pdfUUID}/preload")
+    @GetMapping("{pdfUUID}/preload")
     public Result preloadPDFByPage(@PathVariable long pdfUUID) throws Exception
     {
         docLoadService.splitPDFAndCache(pdfUUID);

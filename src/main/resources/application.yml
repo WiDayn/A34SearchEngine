@@ -40,7 +40,6 @@ mybatis-plus:
     db-config:
       id-type: auto
 
-
 settings:
   debug-level: 1
   worker-id: 1

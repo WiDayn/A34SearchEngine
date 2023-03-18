@@ -19,7 +19,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class LoginInterceptor implements HandlerInterceptor {
+public class LoadInterceptor implements HandlerInterceptor
+{
 
     @Value("${settings.auth-server.url}")
     private String authServerURL;
@@ -37,7 +38,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        String token = httpServletRequest.getHeader("Authorization");
+        String token = httpServletRequest.getParameter("token");
         log.info(token);
         if (token == null || token.isEmpty()){
             Result result = Result.fail(StatusEnum.NO_LOGIN);
