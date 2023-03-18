@@ -296,8 +296,7 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         HighlightQuery highlightQuery=new HighlightQuery(highlight, PDFDocPage.class);
         org.springframework.data.elasticsearch.core.query.Query query = new CriteriaQuery(criteria);
         query.setHighlightQuery(highlightQuery);
-        SearchHits<PDFDoc> searchHits=elasticsearchOperations.search(query, PDFDoc.class);
-        return searchHits;
+        return elasticsearchOperations.search(query, PDFDoc.class);
     }
 
     public SuggestResult searchPhraseSuggest(String keywords) throws IOException {
