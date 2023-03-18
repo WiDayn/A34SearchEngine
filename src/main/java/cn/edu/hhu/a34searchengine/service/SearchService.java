@@ -15,4 +15,6 @@ public interface SearchService
     Result searchInAbstract(String keywords, SearchCondition condition, Pageable pageRequest);
 
     Result searchInImageText(String keywords, SearchCondition condition, Pageable pageRequest);
+
+    Result searchSuggest(String keywards);
 }

@@ -8,21 +8,6 @@ spring:
     username: a34_test
     password: 5deT4zT5hKpfFYhj
     driver-class-name: com.mysql.cj.jdbc.Driver
-  hikari:
-    # 池中最小空闲连接数量，默认值10
-    minimum-idle: 5
-    # 空闲时间
-    idle-timeout: 600000
-    # 池中最大连接数（包括空闲和正在使用的连接）
-    maximum-pool-size: 10
-    # 是否自动提交池中返回的连接
-    auto-commit: true
-    # 连接池的名字
-    pool-name: MyHikariCP
-    # 连接池中连接的最大生命周期
-    max-lifetime: 1800000
-    # 连接超时时间。默认值为30s
-    connection-timeout: 30000
 
 
   elasticsearch:
@@ -49,7 +34,7 @@ setting:
   PDFData:
     expireTimeoutMinutes: 1
   auth-server:
-    url: http://127.0.0.1:8855/verification/verifyToken
+    url: http://1.15.242.140:8855/verification/verifyToken
     auth-key: AGLQwrl9gzazdAgv
 redis:
   host: 127.0.0.1
@@ -64,8 +49,8 @@ redis:
       visit-count: v
     key-prefix-separator: _ #键的前缀和键之间的分隔符
 minio:
-  endpoint: http://127.0.0.1:9000
-  access-key: admin
-  secret-key: admin12345
+  endpoint: http://96.9.225.169:9000
+  access-key: bdDe76sWOlb22rm4
+  secret-key: rzkgQC26aOL5ljIrBIaOWNPTDQA54LAe
   buckets: pdf, pdf2
 
