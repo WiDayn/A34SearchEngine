@@ -48,5 +48,10 @@ public class SearchController
         return searchService.searchInImageText(queryString,condition, PageRequest.of(page - 1,5));
     }
 
-
+    @GetMapping("suggest")
+    @JsonView(SearchResult.SearchResultView.class)
+    public Result searchInImageText(String keywards)
+    {                                                                                  //page从0开始,page==0是第一页,参数page=1时,访问的是第2页
+        return searchService.searchSuggest(keywards);
+    }
 }
