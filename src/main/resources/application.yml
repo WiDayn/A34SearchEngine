@@ -32,7 +32,7 @@ settings:
   PDFData:
     expireTimeoutMinutes: 1
   auth-server:
-    url: http://1.15.242.140:8855/verification/verifyToken
+    url: http://127.0.0.1:8855/verification/verifyToken
     auth-key: AGLQwrl9gzazdAgv
 redis:
   host: 127.0.0.1
@@ -48,10 +48,9 @@ redis:
       visit-count: v
     key-prefix-separator: _ #键的前缀和键之间的分隔符
 minio:
-  endpoint: http://96.9.225.169:9000
-  access-key: bdDe76sWOlb22rm4
-  secret-key: rzkgQC26aOL5ljIrBIaOWNPTDQA54LAe
+  endpoint: http://127.0.0.1:9000
+  access-key: 7bwTcAv0fVxDtwy0
+  secret-key: uJQzCY1epCA5FchTERyUOmeKt1mYSXXi
   buckets: pdf, pdf2
-
 
 

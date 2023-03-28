@@ -2,16 +2,12 @@ package cn.edu.hhu.a34searchengine.service.impl;
 
 import cn.edu.hhu.a34searchengine.dao.PDFDocIndexDao;
 import cn.edu.hhu.a34searchengine.pojo.PDFImageText;
-import cn.edu.hhu.a34searchengine.vo.DocHit;
+import cn.edu.hhu.a34searchengine.vo.*;
 import cn.edu.hhu.a34searchengine.dto.SearchCondition;
 import cn.edu.hhu.a34searchengine.pojo.PDFDoc;
 import cn.edu.hhu.a34searchengine.pojo.PDFDocPage;
 import cn.edu.hhu.a34searchengine.service.SearchService;
 import cn.edu.hhu.a34searchengine.util.Timer;
-import cn.edu.hhu.a34searchengine.vo.Result;
-import cn.edu.hhu.a34searchengine.vo.SearchResult;
-import com.google.errorprone.annotations.DoNotCall;
-import org.omg.CORBA.IntHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -24,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 
 @Service
 public class SearchServiceImpl implements SearchService
@@ -151,6 +148,17 @@ public class SearchServiceImpl implements SearchService
         SearchPage<PDFDoc> searchPage = pdfDocIndexDao.searchInImageText(keywords, condition, pageRequest);
         SearchResult result = _assembleSearchResult(searchPage);
         return Result.success(result);
+    }
+
+    @Override
+    public Result searchSuggest(String keywords) {
+        SuggestResult suggestResult;
+        try {
+            suggestResult = pdfDocIndexDao.searchPhraseSuggest(keywords);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return Result.success(suggestResult);
     }
 
 }

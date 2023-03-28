@@ -30,7 +30,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(@NotNull HttpServletRequest httpServletRequest, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
         //handler可能是资源
-        log.info(httpServletRequest.getRequestURI()+"/?"+httpServletRequest.getQueryString());
+        log.info(httpServletRequest.getRequestURI()+"?"+httpServletRequest.getQueryString());
 
         Timer timer=new Timer();
         if (!(handler instanceof HandlerMethod)){

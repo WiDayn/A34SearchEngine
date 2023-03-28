@@ -1,15 +1,18 @@
 package cn.edu.hhu.a34searchengine.dao.impl;
 
+
 import cn.edu.hhu.a34searchengine.dao.PDFDocIndexDao;
 import cn.edu.hhu.a34searchengine.dto.SearchCondition;
 import cn.edu.hhu.a34searchengine.pojo.PDFDoc;
 import cn.edu.hhu.a34searchengine.pojo.PDFDocPage;
 import cn.edu.hhu.a34searchengine.util.Timer;
+import cn.edu.hhu.a34searchengine.vo.SuggestOption;
+import cn.edu.hhu.a34searchengine.vo.SuggestResult;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ScriptLanguage;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
-import co.elastic.clients.elasticsearch.core.search.Highlight;
-import co.elastic.clients.elasticsearch.core.search.HighlightField;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.*;
 import co.elastic.clients.json.JsonData;
 import com.google.errorprone.annotations.DoNotCall;
 import org.apache.http.annotation.Obsolete;
@@ -28,6 +31,7 @@ import org.springframework.data.elasticsearch.core.query.SourceFilter;
 import org.springframework.data.elasticsearch.core.query.highlight.HighlightFieldParameters;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -140,6 +144,18 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         }
         timer.stop();
         return boolQB;
+    }
+
+    // PhraseSuggestOption处理为可以序列号的数据结构
+    private SuggestResult _assemblePhraseSuggestResult(List<PhraseSuggestOption> suggestOptions){
+        SuggestResult suggestResult = new SuggestResult();
+        for(PhraseSuggestOption phraseSuggestOption : suggestOptions) {
+            SuggestOption suggestOption = new SuggestOption();
+            suggestOption.setText(phraseSuggestOption.text());
+            suggestOption.setScore(phraseSuggestOption.score());
+            suggestResult.setSuggestOption(suggestOption);
+        }
+        return suggestResult;
     }
 
     //将几种Query综合build
@@ -265,7 +281,21 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         return searchPage;
     }
 
+    public SuggestResult searchPhraseSuggest(String keywords) throws IOException {
+        SearchResponse<PDFDoc> response = elasticsearchClient.search(searchRequestBuilder -> searchRequestBuilder
+                        .index("")
+                        .suggest(suggesterBuilder -> suggesterBuilder
+                                .suggesters("success_suggest", fieldSuggesterBuilder -> fieldSuggesterBuilder
+                                        .text(keywords)
+                                        .phrase(phraseSuggestBuilder -> phraseSuggestBuilder
+                                                .field("content")
+                                        )
+                                )
+                        )
+                , PDFDoc.class);
 
+        return _assemblePhraseSuggestResult(response.suggest().get("success_suggest").get(0).phrase().options());
+    }
     @Deprecated
     @Obsolete
     @DoNotCall
