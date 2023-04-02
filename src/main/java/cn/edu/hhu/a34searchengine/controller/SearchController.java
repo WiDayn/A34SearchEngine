@@ -50,8 +50,8 @@ public class SearchController
 
     @GetMapping("suggest")
     @JsonView(SearchResult.SearchResultView.class)
-    public Result searchInImageText(String keywards)
-    {                                                                                  //page从0开始,page==0是第一页,参数page=1时,访问的是第2页
+    public Result getSearchSuggestion(String keywards)
+    {
         return searchService.searchSuggest(keywards);
     }
 }

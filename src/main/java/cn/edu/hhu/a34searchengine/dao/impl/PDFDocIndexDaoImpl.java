@@ -109,29 +109,28 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
     public BoolQuery.Builder _assembleConditionQuery(SearchCondition condition)
     {
         Timer timer=new Timer();
-        FunctionScoreQuery.Builder functionScoreQuery=new FunctionScoreQuery.Builder();
 
         BoolQuery.Builder boolQB = new BoolQuery.Builder();
         if (condition.getAuthors() != null) {
             BoolQuery.Builder subBoolQB = QueryBuilders.bool();
             for (String author : condition.getAuthors()) {
-                subBoolQB.should(q -> q.term(t -> t.field("authors").value(author)));
+                subBoolQB.should(q -> q.fuzzy(f -> f.field("authors").value(author).fuzziness("auto")));
             }
-            boolQB.must(q -> q.bool(subBoolQB.build()));
+            boolQB.should(q -> q.bool(subBoolQB.build()));
         }
         if (condition.getSubsets() != null) {
             BoolQuery.Builder subBoolQB = QueryBuilders.bool();
             for (String subset : condition.getSubsets()) {
-                subBoolQB.should(q -> q.term(t -> t.field("subset").value(subset)));
+                subBoolQB.should(q -> q.fuzzy(f -> f.field("subset").value(subset).fuzziness("auto")));
             }
-            boolQB.must(q -> q.bool(subBoolQB.build()));
+            boolQB.should(q -> q.bool(subBoolQB.build()));
         }
         if (condition.getGenres() != null) {
             BoolQuery.Builder subBoolQB = QueryBuilders.bool();
             for (String genre : condition.getGenres()) {
-                subBoolQB.should(q -> q.term(t -> t.field("genre").value(genre)));
+                subBoolQB.should(q -> q.fuzzy(f -> f.field("genre").value(genre)));
             }
-            boolQB.must(q -> q.bool(subBoolQB.build()));
+            boolQB.should(q -> q.bool(subBoolQB.build()));
         }
 
         Date pubDateLB = condition.getPubDateLB();
@@ -201,27 +200,27 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
     @Override
     public SearchPage<PDFDoc> searchInContent(String keywords, SearchCondition condition, Pageable pageRequest)
     {
-        Timer timer=new Timer();
+        Timer timer = new Timer();
         //注入查询配置
         NativeQueryBuilder nativeQB = _assembleNativeQuery();
         //注入查询条件
-        BoolQuery.Builder boolQB=_assembleConditionQuery(condition);
+        BoolQuery.Builder boolQB = _assembleConditionQuery(condition);
         //构造NestedQuery查询pdf正文
-        NestedQuery.Builder pagesContentNQB = _getNestedQueryBuilder("pages","pages", contentHighlighter,"pages.content","pages.imageTexts");
+        NestedQuery.Builder pagesContentNQB = _getNestedQueryBuilder("pages", "pages", contentHighlighter, "pages.content", "pages.imageTexts");
         //构造NestedQuery查询图片中的文字
-        NestedQuery.Builder imageTextsNQB = _getNestedQueryBuilder("pages.imageTexts","pages.imageTexts", imageTextsHighlighter,"pages.imageTexts.text");
+        NestedQuery.Builder imageTextsNQB = _getNestedQueryBuilder("pages.imageTexts", "pages.imageTexts", imageTextsHighlighter, "pages.imageTexts.text");
 
         //注入查询pdf正文的NestedQuery
-        _injectNestedQuery(boolQB,pagesContentNQB,keywords,"pages.content","auto");
+        _injectNestedQuery(boolQB, pagesContentNQB, keywords, "pages.content", "auto");
 
         //注入查询来自图片的文本的NestedQuery
-        _injectNestedQuery(boolQB,imageTextsNQB,keywords,"pages.imageTexts.text","auto");
+        _injectNestedQuery(boolQB, imageTextsNQB, keywords, "pages.imageTexts.text", "auto");
 
         //获取打分规则
-        ScriptScoreQuery.Builder scriptScoreQB=_getScriptScoreQueryBuilder();
+        ScriptScoreQuery.Builder scriptScoreQB = _getScriptScoreQueryBuilder();
 
         //构造查询
-        NativeQuery query = _buildSearch(nativeQB,boolQB,scriptScoreQB,pageRequest);
+        NativeQuery query = _buildSearch(nativeQB, boolQB, scriptScoreQB, pageRequest);
 
         SearchHits<PDFDoc> searchHits = elasticsearchOperations.search(query, PDFDoc.class);
         SearchPage<PDFDoc> searchPage = SearchHitSupport.searchPageFor(searchHits, pageRequest);

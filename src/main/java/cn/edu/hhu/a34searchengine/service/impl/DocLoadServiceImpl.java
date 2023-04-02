@@ -4,6 +4,7 @@ import cn.edu.hhu.a34searchengine.dao.PDFCacheDao;
 import cn.edu.hhu.a34searchengine.dao.PDFFileDao;
 import cn.edu.hhu.a34searchengine.pojo.PDFData;
 import cn.edu.hhu.a34searchengine.service.DocLoadService;
+import cn.edu.hhu.a34searchengine.util.FileUtil;
 import cn.edu.hhu.a34searchengine.util.PDFUtil;
 import cn.edu.hhu.a34searchengine.util.Timer;
 import cn.edu.hhu.a34searchengine.vo.Result;
@@ -41,6 +42,7 @@ public class DocLoadServiceImpl implements DocLoadService
             return;
         Vector<byte[]> pagesData = PDFUtil.split(pdfFileDao.getPDFInputStream("pdf", String.valueOf(pdfUUID)));
         PDFData pdfData = new PDFData();
+        FileUtil.createAndSave("D:\\tmp.pdf",pagesData.get(0));
         pdfData.setPdfUUID(pdfUUID);
         int pageNumber = 1;
         for (byte[] pageData : pagesData) {

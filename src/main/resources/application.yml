@@ -30,7 +30,7 @@ settings:
   worker-id: 1
   datacenter-id: 1
   PDFData:
-    expireTimeoutMinutes: 1
+    expireTimeoutMinutes: 60
   auth-server:
     url: http://127.0.0.1:8855/verification/verifyToken
     auth-key: AGLQwrl9gzazdAgv

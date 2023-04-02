@@ -33,9 +33,9 @@ public class DocLoadController
 
     //当前端点进去某一个pdf想查看搜索详情时,发送这个请求,这个请求会预先对pdf分页并放入缓存(如果已分页则直接忽略)
     @GetMapping("{pdfUUID}/preload")
-    public Result preloadPDFByPage(@PathVariable long pdfUUID) throws Exception
+    public Result preloadPDFByPage(@PathVariable String pdfUUID) throws Exception
     {
-        docLoadService.splitPDFAndCache(pdfUUID);
+        docLoadService.splitPDFAndCache(Long.parseLong(pdfUUID));
         return Result.success(null);
     }
 
