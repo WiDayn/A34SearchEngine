@@ -24,7 +24,7 @@ public class PDFDoc
     @JsonView(SearchResult.SearchResultView.class)
     protected String title;       //标题
 
-    @Field(type = FieldType.Keyword,index = false,store = false,analyzer = "ik_smart")
+    @Field(type = FieldType.Text,index = true,store = false,analyzer = "ik_smart")
     @JsonView(SearchResult.SearchResultView.class)
     protected String authors;    //作者
 
@@ -36,7 +36,7 @@ public class PDFDoc
     @JsonView(SearchResult.SearchResultView.class)
     protected String keywords;   //关键字
 
-    @Field(type = FieldType.Keyword,index = false,store = false)
+    @Field(type = FieldType.Text,index = true,store = false)
     @JsonView(SearchResult.SearchResultView.class)
     protected String subset;        //期刊名/保管机构/出版社等
 
@@ -44,7 +44,7 @@ public class PDFDoc
     @JsonView(SearchResult.SearchResultView.class)
     protected Long pubDate;       //文献发表时间的时间戳
 
-    @Field(type = FieldType.Keyword,index=false,store = false)
+    @Field(type = FieldType.Keyword,index=true,store = false)
     @JsonView(SearchResult.SearchResultView.class)
     protected String genre;
 

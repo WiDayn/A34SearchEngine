@@ -58,7 +58,7 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         HighlightFieldParameters highlightFieldParameters=new HighlightFieldParameters.HighlightFieldParametersBuilder()
                 .withPreTags("<em>")
                 .withPostTags("</em>")
-                .withFragmentSize(100)
+                .withFragmentSize(200)
                 .build();
         highlightField=new org.springframework.data.elasticsearch.core.query.highlight.HighlightField("articleAbstract",highlightFieldParameters);
         org.springframework.data.elasticsearch.core.query.highlight.Highlight highlight=new org.springframework.data.elasticsearch.core.query.highlight.Highlight(List.of(highlightField));
@@ -67,11 +67,11 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         HighlightField.Builder pagesImageTextsHFB=new HighlightField.Builder().matchedFields("pages.imageTexts.text");
         HighlightField.Builder pagesContentHFB=new HighlightField.Builder().matchedFields("pages.content");
         Highlight.Builder highlightBuilder=new Highlight.Builder()
-                .fragmentSize(100)
+                .fragmentSize(300)
                 .preTags("<em>")
                 .postTags("</em>");
         Highlight.Builder highlightBuilder2=new Highlight.Builder() //builder不能重复使用
-                .fragmentSize(100)
+                .fragmentSize(300)
                 .preTags("<em>")
                 .postTags("</em>");
         MatchQuery.Builder matchQB=new MatchQuery.Builder();
@@ -111,26 +111,18 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         Timer timer=new Timer();
 
         BoolQuery.Builder boolQB = new BoolQuery.Builder();
-        if (condition.getAuthors() != null) {
-            BoolQuery.Builder subBoolQB = QueryBuilders.bool();
-            for (String author : condition.getAuthors()) {
-                subBoolQB.should(q -> q.fuzzy(f -> f.field("authors").value(author).fuzziness("auto")));
-            }
-            boolQB.should(q -> q.bool(subBoolQB.build()));
+        if (condition.getAuthors() != null && !condition.getAuthors().equals("")) {
+            boolQB.must(q -> q.match(f -> f.field("authors").query(condition.getAuthors()).fuzziness("2")));
         }
-        if (condition.getSubsets() != null) {
-            BoolQuery.Builder subBoolQB = QueryBuilders.bool();
-            for (String subset : condition.getSubsets()) {
-                subBoolQB.should(q -> q.fuzzy(f -> f.field("subset").value(subset).fuzziness("auto")));
-            }
-            boolQB.should(q -> q.bool(subBoolQB.build()));
+        if (condition.getSubsets() != null && !condition.getSubsets().equals("")) {
+            boolQB.must(q -> q.match(f -> f.field("subset").query(condition.getSubsets()).fuzziness("2")));
         }
-        if (condition.getGenres() != null) {
+        if (condition.getGenres() != null && condition.getGenres().length!=0) {
             BoolQuery.Builder subBoolQB = QueryBuilders.bool();
             for (String genre : condition.getGenres()) {
                 subBoolQB.should(q -> q.fuzzy(f -> f.field("genre").value(genre)));
             }
-            boolQB.should(q -> q.bool(subBoolQB.build()));
+            boolQB.must(q -> q.bool(subBoolQB.build()));
         }
 
         Date pubDateLB = condition.getPubDateLB();
@@ -166,6 +158,7 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         timer.stop();
         return nativeQB.build();
     }
+
 
 
     private ScriptScoreQuery.Builder _getScriptScoreQueryBuilder()  //注意与DocHit.Scores.setScores()保持一致
@@ -210,11 +203,15 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         //构造NestedQuery查询图片中的文字
         NestedQuery.Builder imageTextsNQB = _getNestedQueryBuilder("pages.imageTexts", "pages.imageTexts", imageTextsHighlighter, "pages.imageTexts.text");
 
+        BoolQuery.Builder coreBoolQB = new BoolQuery.Builder();
+
         //注入查询pdf正文的NestedQuery
-        _injectNestedQuery(boolQB, pagesContentNQB, keywords, "pages.content", "auto");
+        _injectNestedQuery(coreBoolQB, pagesContentNQB, keywords, "pages.content", "2");
 
         //注入查询来自图片的文本的NestedQuery
-        _injectNestedQuery(boolQB, imageTextsNQB, keywords, "pages.imageTexts.text", "auto");
+        _injectNestedQuery(coreBoolQB, imageTextsNQB, keywords, "pages.imageTexts.text", "2");
+
+        boolQB.must(b -> b.bool(coreBoolQB.build()));
 
         //获取打分规则
         ScriptScoreQuery.Builder scriptScoreQB = _getScriptScoreQueryBuilder();
@@ -295,64 +292,6 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
 
         return _assemblePhraseSuggestResult(response.suggest().get("success_suggest").get(0).phrase().options());
     }
-    @Deprecated
-    @Obsolete
-    @DoNotCall
-    private SearchHits<PDFDoc> findByKeywords2(String keywords, SearchCondition condition)
-    {
-        //构造查询条件
-        Criteria criteria = new Criteria();
-        if (condition.getAuthors() != null) {
-            Criteria subCriteria = new Criteria();
-            for (String author : condition.getAuthors()) {
-                subCriteria = subCriteria.or("authors").is(author);
-            }
-            criteria.and(subCriteria);
-        }
-        if (condition.getSubsets() != null) {
-            Criteria subCriteria = new Criteria();
-            for (String subset : condition.getSubsets()) {
-                subCriteria = subCriteria.or("subset").is(subset);
-            }
-            criteria.and(subCriteria);
-        }
-        if (condition.getGenres() != null) {
-            Criteria subCriteria = new Criteria();
-            for (String genre : condition.getGenres()) {
-                subCriteria = subCriteria.or("genre").is(genre);
-            }
-            criteria.and(subCriteria);
-        }
-        if (condition.getPubDateLB() != null) {
-            criteria = criteria.and("pubDate").greaterThanEqual(condition.getPubDateLB().getTime());
-        }
-        if (condition.getPubDateUB() != null) {
-            criteria = criteria.and("pubDate").lessThanEqual(condition.getPubDateUB().getTime());
-        }
 
-        org.springframework.data.elasticsearch.core.query.highlight.HighlightField highlightField;
-        HighlightFieldParameters highlightFieldParameters=new HighlightFieldParameters.HighlightFieldParametersBuilder()
-                .withPreTags("<em>")
-                .withPostTags("</em>")
-                .withFragmentSize(100)
-                .build();
-        if (condition.isSearchInAbstractsOnly()) {
-            criteria = criteria.and("articleAbstract");
-            highlightField=new org.springframework.data.elasticsearch.core.query.highlight.HighlightField("articleAbstract",highlightFieldParameters);
-        } else if (condition.isSearchInTextsFromImagesOnly()) {
-            criteria = criteria.and("imageTexts");
-            highlightField=new org.springframework.data.elasticsearch.core.query.highlight.HighlightField("imageTexts",highlightFieldParameters);
-        } else {
-            criteria = criteria.and("content");
-            highlightField=new org.springframework.data.elasticsearch.core.query.highlight.HighlightField("content",highlightFieldParameters);
-        }
-        criteria = criteria.matches(keywords);
-        org.springframework.data.elasticsearch.core.query.highlight.Highlight highlight=new org.springframework.data.elasticsearch.core.query.highlight.Highlight(List.of(highlightField));
-        HighlightQuery highlightQuery=new HighlightQuery(highlight, PDFDocPage.class);
-        org.springframework.data.elasticsearch.core.query.Query query = new CriteriaQuery(criteria);
-        query.setHighlightQuery(highlightQuery);
-        SearchHits<PDFDoc> searchHits=elasticsearchOperations.search(query, PDFDoc.class);
-        return searchHits;
-    }
 
 }

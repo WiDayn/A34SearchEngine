@@ -50,8 +50,8 @@ public class SearchController
 
     @GetMapping("suggest")
     @JsonView(SearchResult.SearchResultView.class)
-    public Result getSearchSuggestion(String keywards)
+    public Result getSearchSuggestion(String keywords)
     {
-        return searchService.searchSuggest(keywards);
+        return searchService.searchSuggest(keywords);
     }
 }

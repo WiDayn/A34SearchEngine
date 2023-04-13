@@ -15,9 +15,9 @@ public class SearchCondition
     @DateTimeFormat(pattern = "yyyy",fallbackPatterns = "yyyy-MM-dd")
     Date pubDateLB;   //发表日期下界
 
-    String[] authors;  //作者,在含有xx作者的文章中查询, 前端有传递数组的方法
+    String authors;  //作者,在含有xx作者的文章中查询, 前端有传递数组的方法
 
-    String[] subsets;  //期刊名或保存机构名,在某些期刊/保存机构内查询
+    String subsets;  //期刊名或保存机构名,在某些期刊/保存机构内查询
 
     String[] genres;     //论文类型,在xx类型论文中查询
 
