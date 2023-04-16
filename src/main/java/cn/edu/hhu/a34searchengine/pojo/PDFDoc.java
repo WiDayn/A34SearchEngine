@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Data
-@Document(indexName = "pdf_doc")
+@Document(indexName = "pdf_doc_2")
 public class PDFDoc
 {
     @Id

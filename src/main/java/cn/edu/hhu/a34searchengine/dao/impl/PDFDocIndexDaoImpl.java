@@ -112,10 +112,10 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
 
         BoolQuery.Builder boolQB = new BoolQuery.Builder();
         if (condition.getAuthors() != null && !condition.getAuthors().equals("")) {
-            boolQB.must(q -> q.match(f -> f.field("authors").query(condition.getAuthors()).fuzziness("2")));
+            boolQB.must(q -> q.match(f -> f.field("authors").query(condition.getAuthors()).fuzziness("auto")));
         }
         if (condition.getSubsets() != null && !condition.getSubsets().equals("")) {
-            boolQB.must(q -> q.match(f -> f.field("subset").query(condition.getSubsets()).fuzziness("2")));
+            boolQB.must(q -> q.match(f -> f.field("subset").query(condition.getSubsets()).fuzziness("auto")));
         }
         if (condition.getGenres() != null && condition.getGenres().length!=0) {
             BoolQuery.Builder subBoolQB = QueryBuilders.bool();
@@ -206,10 +206,10 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
         BoolQuery.Builder coreBoolQB = new BoolQuery.Builder();
 
         //注入查询pdf正文的NestedQuery
-        _injectNestedQuery(coreBoolQB, pagesContentNQB, keywords, "pages.content", "2");
+        _injectNestedQuery(coreBoolQB, pagesContentNQB, keywords, "pages.content", "auto");
 
         //注入查询来自图片的文本的NestedQuery
-        _injectNestedQuery(coreBoolQB, imageTextsNQB, keywords, "pages.imageTexts.text", "2");
+        _injectNestedQuery(coreBoolQB, imageTextsNQB, keywords, "pages.imageTexts.text", "auto");
 
         boolQB.must(b -> b.bool(coreBoolQB.build()));
 
@@ -279,12 +279,12 @@ public class PDFDocIndexDaoImpl implements PDFDocIndexDao
 
     public SuggestResult searchPhraseSuggest(String keywords) throws IOException {
         SearchResponse<PDFDoc> response = elasticsearchClient.search(searchRequestBuilder -> searchRequestBuilder
-                        .index("")
+                        .index("pdf_doc_2")
                         .suggest(suggesterBuilder -> suggesterBuilder
                                 .suggesters("success_suggest", fieldSuggesterBuilder -> fieldSuggesterBuilder
                                         .text(keywords)
                                         .phrase(phraseSuggestBuilder -> phraseSuggestBuilder
-                                                .field("content")
+                                                .field("pages.content")
                                         )
                                 )
                         )

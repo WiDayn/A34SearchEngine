@@ -42,7 +42,7 @@ public class DocLoadServiceImpl implements DocLoadService
             return;
         Vector<byte[]> pagesData = PDFUtil.split(pdfFileDao.getPDFInputStream("pdf", String.valueOf(pdfUUID)));
         PDFData pdfData = new PDFData();
-        FileUtil.createAndSave("D:\\tmp.pdf",pagesData.get(0));
+      //  FileUtil.createAndSave("D:\\tmp.pdf",pagesData.get(0));
         pdfData.setPdfUUID(pdfUUID);
         int pageNumber = 1;
         for (byte[] pageData : pagesData) {

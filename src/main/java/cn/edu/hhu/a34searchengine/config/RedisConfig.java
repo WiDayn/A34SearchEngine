@@ -12,6 +12,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.time.Duration;
+
 @Configuration
 public class RedisConfig
 {
@@ -59,7 +61,7 @@ public class RedisConfig
         JedisClientConfiguration.JedisPoolingClientConfigurationBuilder jpcb =
                 (JedisClientConfiguration.JedisPoolingClientConfigurationBuilder) JedisClientConfiguration.builder();
         //指定jedisPoolConifig来修改默认的连接池构造器
-        jpcb.poolConfig(jedisPoolConfig);
+        jpcb.poolConfig(jedisPoolConfig).and().connectTimeout(Duration.ofSeconds(300)).readTimeout(Duration.ofSeconds(300));
         //通过构造器来构造jedis客户端配置
         JedisClientConfiguration jedisClientConfiguration = jpcb.build();
         //单机配置 + 客户端配置 = jedis连接工厂
